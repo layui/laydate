@@ -1,11 +1,11 @@
-﻿## 文件说明
+﻿## 说明
 laydate.js是压缩后的核心代码，laydate.dev.js是开发版的源代码。
 
 need目录存放着核心css
 
 skins是皮肤目录
 
-将laydate pull到你的本地后，把他们存放到您js相关目录下的laydate目录，不要改动laydate的结构，否则无法正常运行。
+将laydate pull到你的本地后，将其存放到您js相关目录下的laydate目录，不要改动laydate的结构，否则无法正常运行。
 
 ## 愿景
 做全球最好的web日期控件。
