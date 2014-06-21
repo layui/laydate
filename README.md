@@ -1,28 +1,16 @@
 ﻿## 文件说明
-laydate.js是压缩后的
+laydate.js是压缩后的核心代码，laydate.dev.js是开发版的源代码。
+need目录存放着核心css
+skins是皮肤目录
+将laydate pull到你的本地后，把他们存放到您js相关目录下的laydate目录，不要改动laydate的结构，否则无法正常运行。
 
 ## 愿景
-致力于打造国内最盛行的弹层组件，为web开发提供强劲动力。
+做全球最好的web日期控件。
 
 
 ## 简要
-layer遵循于LGPL开源协议，她是一枚可以让你想到即可做到的新生代web弹窗/层js组件。layer侧重于用户灵活的自定义，为不同人的使用习惯提供全方位设计，您的页面会因此拥有更丰富、友好的操作体验，而您只需在调用时简单地配置相关参数，即可轻松实现各类交互。
-
-与同类弹出层组件相比，layer的优势明显，她尽可能地在以更少的代码展现出更强健的功能。layer格外注重性能的提升、易用和实用性，正因如此，越来越多的开发者将媚眼投上了小小的layer。当你问及她的兼容时，layer必须告诉你，她兼容了一切浏览器，包括古老的ie6。layer公开了如此多的接口，这使得您可以DIY太多您需要的风格，尤其是页面层模式，意味着必要时您可以完全抛弃layer的现有皮肤，并用你的思维去勾勒她的衣着。而问题在于，我必须中止“王婆卖瓜”的陈述。因为一切的不足或友好，都需要您在使用过程中去发现。
-
-## 现状
-从两年前初出茅庐，到后来成为小众组件，再发展到今天，已为数以万计的人所熟知。
-据不完全统计，截至到2014年5月13号，layer已服务于15万多家web平台。
-其中包括：
-* [中国联通](http://app.10010.com/)
-* [蚂蚁短租](http://www.mayi.com/)
-* [phpyun](http://www.phpyun.com/)
-* [卡牌网](http://www.kapai.com/)
-* [八圆包](http://www.bayuanbao.com/)
-
-
-事实上我们无法获取到更多案例，所以如果您有大型项目也在使用layer，您可以联系作者，以便在layer官网展现，也为您的品牌推广尽一些绵薄之力。
+她基于原生JavaScript精心雕琢，兼容了包括IE6在内的所有主流浏览器。她具备优雅的内部代码，良好的性能体验，和完善的皮肤体系，并且完全开源，你可以任意获取开发版源代码，一扫某些传统日期控件的封闭与狭隘。layDate本着资源共享的开发者精神和对网页日历交互无穷的追求，延续了layui一贯的简单与易用。她遵循LGPL协议，您可以免费将她用于任何个人项目。
 
 
 ## 备注
-[官网](http://sentsin.com/jquery/layer/)、[更新日志](https://github.com/sentsin/layer/blob/master/Update%20Notes.txt)、[Say交流](http://say.sentsin.com/home-48.html)、[商业支持](http://url.cn/RAejZY)
+[官网](http://sentsin.com/layui/laydate/)、[Say交流](http://say.sentsin.com/home-58.html)
