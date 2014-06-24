@@ -16,7 +16,7 @@
 
 .laydate_body .laydate_box{border-top:none; border-bottom:none; background-color:#fff; color:#333;}
 .laydate_body .laydate_box input{background:none!important; color:#fff;}
-.laydate_body .laydate_box .laydate_void{color:#FFD7D2!important;}
+.laydate_body .laydate_box .laydate_void{color:#ccc!important;}
 .laydate_body .laydate_box a, .laydate_body .laydate_box a:hover{color:#333;}
 .laydate_body .laydate_box a:hover{color:#666;}
 .laydate_body .laydate_click{background-color:#F32043!important; color:#fff!important;}
