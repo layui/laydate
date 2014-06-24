@@ -10,17 +10,13 @@ html{_background-image:url(about:blank); _background-attachment:fixed;}
 .laydate_body .laydate_box, .laydate_body .laydate_box *{margin:0; padding:0;}
 .laydate-icon,
 .laydate-icon-default,
-.laydate-icon-yahui,
 .laydate-icon-danlan,
-.laydate-icon-qianhuang,
-.laydate-icon-yalan,
-.laydate-icon-dahong{height:22px; line-height:22px; padding-right:20px; background-repeat:no-repeat; background-position:right center;  background-color:#fff; outline:0;}
-.laydate-icon-default{border:1px solid #C6C6C6; background-image:url(../skins/default/icon.png)}
-.laydate-icon-yahui{border:1px solid #C6C6C6; background-image:url(../skins/yahui/icon.png)}
+.laydate-icon-dahong,
+.laydate-icon-molv{height:22px; line-height:22px; padding-right:20px; border:1px solid #C6C6C6; background-repeat:no-repeat; background-position:right center;  background-color:#fff; outline:0;}
+.laydate-icon-default{ background-image:url(../skins/default/icon.png)}
 .laydate-icon-danlan{border:1px solid #B1D2EC; background-image:url(../skins/danlan/icon.png)}
-.laydate-icon-qianhuang{border:1px solid #E7D7CB; background-image:url(../skins/qianhuang/icon.png)}
-.laydate-icon-yalan{border:1px solid #34AADC; background-image:url(../skins/yalan/icon.png)}
-.laydate-icon-dahong{border:1px solid #D91600; background-image:url(../skins/dahong/icon.png)}
+.laydate-icon-dahong{background-image:url(../skins/dahong/icon.png)}
+.laydate-icon-molv{background-image:url(../skins/molv/icon.png)}
 .laydate_body .laydate_box{width:240px; font:12px '\5B8B\4F53'; z-index:99999999; *margin:-2px 0 0 -2px; *overflow:hidden; _margin:0; _position:absolute!important; background-color:#fff;}
 .laydate_body .laydate_box li{list-style:none;}
 .laydate_body .laydate_box .laydate_void{cursor:text!important;}
@@ -31,7 +27,7 @@ html{_background-image:url(about:blank); _background-attachment:fixed;}
 .laydate_body .laydate_box .laydate_show{display:block;}
 .laydate_body .laydate_box input{outline:0; font-size:14px; background-color:#fff;}
 .laydate_body .laydate_top{position:relative; height:26px; padding:5px; *width:100%; z-index:99;}
-.laydate_body .laydate_ym{position:relative; float:left; width height:24px; cursor:pointer;}
+.laydate_body .laydate_ym{position:relative; float:left; height:24px; cursor:pointer;}
 .laydate_body .laydate_ym input{float:left; height:24px; line-height:24px; text-align:center; border:none; cursor:pointer;}
 .laydate_body .laydate_ym .laydate_yms{position:absolute; left: -1px; top: 24px; height:181px;}
 .laydate_body .laydate_y{width:121px; margin-right:6px;}
@@ -54,14 +50,15 @@ html{_background-image:url(about:blank); _background-attachment:fixed;}
 .laydate_body .laydate_table{ width:230px; margin:0 5px; border-collapse:collapse; border-spacing:0px; }
 .laydate_body .laydate_table td{width:31px; height:19px; line-height:19px; text-align: center; cursor:pointer; font-size: 12px;}
 .laydate_body .laydate_table thead{height:22px; line-height:22px;}
-.laydate_body .laydate_table thead th{font-weight:400; font-size:12px;}
+.laydate_body .laydate_table thead th{font-weight:400; font-size:12px; text-align:center;}
 .laydate_body .laydate_bottom{position:relative; height:22px; line-height:20px; padding:5px; font-size:12px;}
 .laydate_body .laydate_bottom #laydate_hms{position: relative; z-index: 1; float:left; }
 .laydate_body .laydate_time{ position:absolute; left:5px; bottom: 26px; width:129px; height:125px; *overflow:hidden;}
 .laydate_body .laydate_time .laydate_hmsno{ padding:5px 0 0 5px;}
 .laydate_body .laydate_time .laydate_hmsno span{display:block; float:left; width:24px; height:19px; line-height:19px; text-align:center; cursor:pointer; *margin-bottom:-5px;}
 .laydate_body .laydate_time1{width:228px; height:154px;}
-.laydate_body .laydate_time1 .laydate_hmsno{ padding:0; *padding:4px 0 0 5px;}
+.laydate_body .laydate_time1 .laydate_hmsno{padding: 6px 0 0 8px;}
+.laydate_body .laydate_time1 .laydate_hmsno span{width:21px; height:20px; line-height:20px;}
 .laydate_body .laydate_msg{left:49px; bottom:67px; width:141px; height:auto; overflow: hidden;}
 .laydate_body .laydate_msg p{padding:5px 10px;}
 .laydate_body .laydate_bottom li{float:left; height:20px; line-height:20px; border-right:none; font-weight:900;}

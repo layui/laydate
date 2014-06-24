@@ -52,6 +52,7 @@
 
 .laydate_body .laydate_m .laydate_yms span:hover,
 .laydate_body .laydate_y .laydate_yms ul li:hover,
-.laydate_body .laydate_table td:hover{background-color:#87CBE9; color:#fff;}
+.laydate_body .laydate_table td:hover,
+.laydate_body .laydate_time .laydate_hmsno span:hover{background-color:#87CBE9; color:#fff;}
 
 

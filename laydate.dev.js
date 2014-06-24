@@ -1,8 +1,8 @@
 ﻿/**
  
- @Name : layDate v1.0 日期控件
+ @Name : layDate v1.1 日期控件
  @Author: 贤心
- @Date: 2014-06-20
+ @Date: 2014-06-25
  @QQ群：176047195
  @Site：http://sentsin.com/layui/laydate
  
@@ -35,7 +35,7 @@ win.laydate = function(options){
     return laydate;
 };
 
-laydate.v = '1.0';
+laydate.v = '1.1';
 
 //获取组件存放路径
 Dates.getPath = (function(){
@@ -60,7 +60,7 @@ Dates.trim = function(str){
 
 //补齐数位
 Dates.digit = function(num){
-    return num < 10 ? '0' + num : num;
+    return num < 10 ? '0' + (num|0) : num;
 };
 
 Dates.stopmp = function(e){
@@ -255,19 +255,19 @@ Dates.timeVoid = function(times, index){
 //检测日期是否合法
 Dates.check = function(){
     var reg = Dates.options.format.replace(/YYYY|MM|DD|hh|mm|ss/g,'\\d+\\').replace(/\\$/g, '');
-    var exp = new RegExp(reg), value = Dates.elem[Dates.elemv];
+    var exp = new RegExp(reg), value = Dates.elem[as.elemv];
     var arr = value.match(/\d+/g) || [], isvoid = Dates.checkVoid(arr[0], arr[1], arr[2]);
     if(value.replace(/\s/g, '') !== ''){
         if(!exp.test(value)){
-            Dates.elem[Dates.elemv] = '';
+            Dates.elem[as.elemv] = '';
             Dates.msg('日期不符合格式，请重新选择。');
             return 1;
         } else if(isvoid[0]){
-            Dates.elem[Dates.elemv] = '';
+            Dates.elem[as.elemv] = '';
             Dates.msg('日期不在有效期内，请重新选择。');
             return 1;
         } else {
-            isvoid.value = Dates.elem[Dates.elemv].match(exp).join();
+            isvoid.value = Dates.elem[as.elemv].match(exp).join();
             arr = isvoid.value.match(/\d+/g);
             if(arr[1] < 1){
                 arr[1] = 1;
@@ -300,8 +300,8 @@ Dates.check = function(){
             }
             if(isvoid.auto){
                 Dates.creation([arr[0], arr[1]|0, arr[2]|0], 1);
-            } else if(isvoid.value !== Dates.elem[Dates.elemv]){
-                Dates.elem[Dates.elemv] = isvoid.value;
+            } else if(isvoid.value !== Dates.elem[as.elemv]){
+                Dates.elem[as.elemv] = isvoid.value;
             }
         }
     }
@@ -380,9 +380,9 @@ Dates.viewDate = function(Y, M, D){
     
     //定位时分秒
     log.times = [
-        Dates.inymd[3]|0 || Dates.hmsin[0].value|0, 
-        Dates.inymd[4]|0 || Dates.hmsin[1].value|0, 
-        Dates.inymd[5]|0 || Dates.hmsin[2].value|0
+        Dates.inymd[3]|0 || 0, 
+        Dates.inymd[4]|0 || 0, 
+        Dates.inymd[5]|0 || 0
     ];
     Dates.each(new Array(3), function(i){
         Dates.hmsin[i].value = Dates.digit(Dates.timeVoid(log.times[i], i) ? Dates.mins[i+3]|0 : log.times[i]|0);
@@ -448,14 +448,14 @@ Dates.viewYears = function(YY){
 //初始化面板数据
 Dates.initDate = function(){
     var S = Dates.query, log = {}, De = new Date();
-    var ymd = Dates.inymd = Dates.elem[Dates.elemv].match(/\d+/g) || [];
+    var ymd = Dates.elem[as.elemv].match(/\d+/g) || [];
     if(ymd.length < 3){
-        Dates.options.start = Dates.options.start || '';
         ymd = Dates.options.start.match(/\d+/g) || [];
         if(ymd.length < 3){
             ymd = [De.getFullYear(), De.getMonth()+1, De.getDate()];
         }
     }
+    Dates.inymd = ymd;
     Dates.viewDate(ymd[0], ymd[1]-1, ymd[2]);
 };
 
@@ -529,11 +529,12 @@ Dates.view = function(elem, options){
     Dates.elem = elem;
     Dates.options = options;
     Dates.options.format || (Dates.options.format = config.format);
-    Dates.elemv = /textarea|input/.test(Dates.elem.tagName.toLocaleLowerCase()) ? 'value' : 'innerHTML';
-    
+    Dates.options.start = Dates.options.start || '';
     Dates.mm = log.mm = [Dates.options.min || config.min, Dates.options.max || config.max];
     Dates.mins = log.mm[0].match(/\d+/g);
     Dates.maxs = log.mm[1].match(/\d+/g);
+    
+    as.elemv = /textarea|input/.test(Dates.elem.tagName.toLocaleLowerCase()) ? 'value' : 'innerHTML';
        
     if(!Dates.box){
         div = doc[creat]('div');
@@ -572,9 +573,9 @@ Dates.view = function(elem, options){
         +'<div class="laydate_bottom">'
           +'<ul id="laydate_hms">'
             +'<li class="laydate_sj">时间</li>'
-            +'<li><input value="00" readonly>:</li>'
-            +'<li><input value="00" readonly>:</li>'
-            +'<li><input value="00" readonly></li>'
+            +'<li><input readonly>:</li>'
+            +'<li><input readonly>:</li>'
+            +'<li><input readonly></li>'
           +'</ul>'
           +'<div class="laydate_time" id="laydate_time"></div>'
           +'<div class="laydate_btn">'
@@ -617,18 +618,19 @@ Dates.close = function(){
 
 //转换日期格式
 Dates.parse = function(ymd, hms, format){
+    ymd = ymd.concat(hms);
     format = format || (Dates.options ? Dates.options.format : config.format);
-    var getDates = format.replace(/YYYY/, ymd[0]);
-    getDates = getDates.replace(/MM/, Dates.digit(ymd[1])).replace(/DD/, Dates.digit(ymd[2]));
-    getDates = getDates.replace(/hh/, Dates.digit(hms[0]|0));
-    return getDates.replace(/mm/, Dates.digit(hms[1]|0)).replace(/ss/, Dates.digit(hms[2]|0));     
+    return format.replace(/YYYY|MM|DD|hh|mm|ss/g, function(str, index){
+        ymd.index = ++ymd.index|0;
+        return Dates.digit(ymd[ymd.index]);
+    });     
 };
 
 //返回最终日期
 Dates.creation = function(ymd, hide){
     var S = Dates.query, hms = Dates.hmsin;
     var getDates = Dates.parse(ymd, [hms[0].value, hms[1].value, hms[2].value]);
-    Dates.elem[Dates.elemv] = getDates;
+    Dates.elem[as.elemv] = getDates;
     if(!hide){
         Dates.close();
         typeof Dates.options.choose === 'function' && Dates.options.choose(getDates); 
@@ -737,15 +739,15 @@ Dates.events = function(){
     //清空
     as.oclear = S('#laydate_clear');
     Dates.on(as.oclear, 'click', function(){
-        Dates.elem[Dates.elemv] = '';
+        Dates.elem[as.elemv] = '';
         Dates.close();
     });
     
     //今天
     as.otoday = S('#laydate_today');
     Dates.on(as.otoday, 'click', function(){
-        var De = new Date();
-        Dates.creation([De.getFullYear(), De.getMonth()+1, De.getDate()]);
+        Dates.elem[as.elemv] = laydate.now(0, Dates.options.format);
+        Dates.close();
     });
     
     //确认
@@ -839,9 +841,11 @@ laydate.reset = function(){
     (Dates.box && Dates.elem) && Dates.follow(Dates.box);
 };
 
-//返回此刻日期
-laydate.now = function(format){
-    var De = new Date();
+//返回指定日期
+laydate.now = function(timestamp, format){
+    var De = new Date((timestamp|0) ? function(tamp){
+        return tamp < 86400000 ? (+new Date + tamp*86400000) : tamp;
+    }(parseInt(timestamp)) : +new Date);
     return Dates.parse(
         [De.getFullYear(), De.getMonth()+1, De.getDate()],
         [De.getHours(), De.getMinutes(), De.getSeconds()],
