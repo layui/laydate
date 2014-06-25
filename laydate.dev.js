@@ -28,9 +28,8 @@ var as = ['laydate_box', 'laydate_void', 'laydate_click', 'LayDateSkin', 'skins/
 win.laydate = function(options){
     options = options || {};
     try{
-        win.event = win.event || laydate.caller.arguments[0];
-    }catch(e){};
-    win.event && (options.tagName = 1);
+        as.event = win.event ? win.event : laydate.caller.arguments[0];
+    } catch(e){};
     Dates.run(options);
     return laydate;
 };
@@ -153,12 +152,21 @@ Dates.stopMosup = function(evt, elem){
 };
 
 Dates.run = function(options){
-    var S = Dates.query, elem, devt;
-    if(!options.tagName){
-        elem = S(options.elem);
-        if(!elem){
+    var S = Dates.query, elem, devt, even = as.event, target;
+    try {
+        target = even.target || even.srcElement || {};
+    } catch(e){
+        target = {};
+    }
+    elem = options.elem ? S(options.elem) : target;
+    if(even && target.tagName){
+        if(!elem || elem === Dates.elem){
             return;
         }
+        Dates.stopmp(even);
+        Dates.view(elem, options);
+        Dates.reshow();
+    } else {
         devt = options.event || 'click';
         Dates.each((elem.length|0) > 0 ? elem : [elem], function(ii, that){
             Dates.on(that, devt, function(ev){
@@ -168,16 +176,7 @@ Dates.run = function(options){
                     Dates.reshow();
                 }
             });
-            Dates.stopMosup(devt, that);
         });
-    } else {
-        elem = options.elem ? S(options.elem) : (event.target || event.srcElement);
-        if(!elem || elem === Dates.elem){
-            return;
-        }
-        Dates.view(elem, options);
-        Dates.stopMosup(event.type, elem);
-        Dates.reshow();
     }
 };
 
