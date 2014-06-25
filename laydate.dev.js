@@ -163,12 +163,14 @@ Dates.run = function(options){
         if(!elem || elem === Dates.elem){
             return;
         }
+        Dates.stopMosup(even.type, elem);
         Dates.stopmp(even);
         Dates.view(elem, options);
         Dates.reshow();
     } else {
         devt = options.event || 'click';
         Dates.each((elem.length|0) > 0 ? elem : [elem], function(ii, that){
+            Dates.stopMosup(devt, that);
             Dates.on(that, devt, function(ev){
                 Dates.stopmp(ev);
                 if(that !== Dates.elem){
