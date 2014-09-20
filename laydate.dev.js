@@ -1,4 +1,4 @@
-﻿/**
+/**
  
  @Name : layDate v1.1 日期控件
  @Author: 贤心
@@ -632,9 +632,10 @@ Dates.creation = function(ymd, hide){
     var S = Dates.query, hms = Dates.hmsin;
     var getDates = Dates.parse(ymd, [hms[0].value, hms[1].value, hms[2].value]);
     Dates.elem[as.elemv] = getDates;
+    var elem = Dates.elem;
     if(!hide){
         Dates.close();
-        typeof Dates.options.choose === 'function' && Dates.options.choose(getDates); 
+        typeof Dates.options.choose === 'function' && Dates.options.choose(getDates,elem); 
     }
 };
 
@@ -749,6 +750,7 @@ Dates.events = function(){
     Dates.on(as.otoday, 'click', function(){
         Dates.elem[as.elemv] = laydate.now(0, Dates.options.format);
         Dates.close();
+        typeof Dates.options.choose === 'function' && Dates.options.choose(laydate.now(0, Dates.options.format)); 
     });
     
     //确认
