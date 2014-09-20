@@ -1,4 +1,4 @@
-﻿/**
+/**
  
  @Name : layDate v1.1 日期控件
  @Author: 贤心
@@ -750,6 +750,7 @@ Dates.events = function(){
     Dates.on(as.otoday, 'click', function(){
         Dates.elem[as.elemv] = laydate.now(0, Dates.options.format);
         Dates.close();
+        typeof Dates.options.choose === 'function' && Dates.options.choose(laydate.now(0, Dates.options.format)); 
     });
     
     //确认
