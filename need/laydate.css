@@ -7,7 +7,7 @@
 **/
 
 html{_background-image:url(about:blank); _background-attachment:fixed;}
-.laydate_body .laydate_box, .laydate_body .laydate_box *{margin:0; padding:0;}
+.laydate_body .laydate_box, .laydate_body .laydate_box *{margin:0; padding:0; -moz-box-sizing:content-box; -webkit-box-sizing:content-box; box-sizing:content-box;}
 .laydate-icon,
 .laydate-icon-default,
 .laydate-icon-danlan,
