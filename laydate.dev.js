@@ -747,8 +747,8 @@ Dates.events = function(){
     //今天
     as.otoday = S('#laydate_today');
     Dates.on(as.otoday, 'click', function(){
-        Dates.elem[as.elemv] = laydate.now(0, Dates.options.format);
-        Dates.close();
+        var now = new Date();
+        Dates.creation([now.getFullYear(), now.getMonth() + 1, now.getDate()]);
     });
     
     //确认
