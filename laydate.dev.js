@@ -832,7 +832,9 @@ Dates.events = function(){
     }).on(doc, 'keydown', function(event){
         event = event || win.event;
         var codes = event.keyCode;
-        if(codes === 13){
+
+        //如果在日期显示的时候按回车
+        if(codes === 13 && Dates.elem){
             Dates.creation([Dates.ymd[0], Dates.ymd[1]+1, Dates.ymd[2]]);
         }
     });
