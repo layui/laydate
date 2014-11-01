@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Demo1</title>
+    <style type="text/css">
+        .demo1{
+            height:300px;
+        }
+    </style>
+</head>
+<body>
+    
+    <div style="height:500px;"></div>
+    <div class="demo1">
+        方本框：<input type="text" id="J-xl">
+    </div>
+
+    <div class="demo1">
+        按钮触发：<input type="text" id="J-xl-2"><input type="button" id="J-xl-2-btn" value="打开">
+    </div>
+
+
+    <div class="demo1">
+        <label for="J-xl-3">Label触发：</label><input type="text" id="J-xl-3" >
+    </div>
+
+    <div class="demo1">
+        直接传dom：<input type="text" id="J-xl-4" >
+    </div>
+
+
+    <script type="text/javascript" src="../laydate.dev.js"></script>
+    <script type="text/javascript">
+        laydate({
+            elem: '#J-xl'
+        });
+
+        document.getElementById('J-xl-2-btn').onclick = function(){
+            laydate({
+                elem: '#J-xl-2'
+            });
+        }
+
+        laydate({
+            elem: '#J-xl-3'
+        });
+
+        laydate({
+            elem: document.getElementById('J-xl-4')
+        });
+    </script>
+</body>
+</html>

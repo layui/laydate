@@ -115,6 +115,13 @@ Dates.shde = function(elem, type){
 
 //简易选择器
 Dates.query = function(node){
+    if(node && node.nodeType === 1){
+        if(node.tagName.toLowerCase() !== 'input'){
+            throw new Error('选择器elem错误');
+        }
+        return node;
+    }
+
     var node = (Dates.trim(node)).split(' '), elemId = doc[byid](node[0].substr(1)), arr;
     if(!elemId){
         return;
@@ -825,7 +832,9 @@ Dates.events = function(){
     }).on(doc, 'keydown', function(event){
         event = event || win.event;
         var codes = event.keyCode;
-        if(codes === 13){
+
+        //如果在日期显示的时候按回车
+        if(codes === 13 && Dates.elem){
             Dates.creation([Dates.ymd[0], Dates.ymd[1]+1, Dates.ymd[2]]);
         }
     });
