@@ -487,7 +487,7 @@ Dates.orien = function(obj, pos){
     } else {
         tops = rect.top > obj.offsetHeight/1.5 ? rect.top - obj.offsetHeight + 1 : Dates.winarea() - obj.offsetHeight;
     }
-    obj.style.top = tops + (pos ? 0 : Dates.scroll()) + 'px';
+    obj.style.top = Math.max(tops + (pos ? 0 : Dates.scroll()),1) + 'px';
 };
 
 //吸附定位
