@@ -17,7 +17,8 @@ var config =  {
     format: 'YYYY-MM-DD', //日期格式
     min: '1900-01-01 00:00:00', //最小日期
     max: '2099-12-31 23:59:59', //最大日期
-    isv: false
+    isv: false,
+    init: true
 };
 
 var Dates = {}, doc = document, creat = 'createElement', byid = 'getElementById', tags = 'getElementsByTagName';
@@ -166,6 +167,10 @@ Dates.run = function(options){
         target = {};
     }
     elem = options.elem ? S(options.elem) : target;
+
+    as.elemv = /textarea|input/.test(elem.tagName.toLocaleLowerCase()) ? 'value' : 'innerHTML';
+    if (config.init) elem[as.elemv] = laydate.now(null, options.format || config.format)
+
     if(even && target.tagName){
         if(!elem || elem === Dates.elem){
             return;
@@ -542,8 +547,6 @@ Dates.view = function(elem, options){
     Dates.mins = log.mm[0].match(/\d+/g);
     Dates.maxs = log.mm[1].match(/\d+/g);
     
-    as.elemv = /textarea|input/.test(Dates.elem.tagName.toLocaleLowerCase()) ? 'value' : 'innerHTML';
-       
     if(!Dates.box){
         div = doc[creat]('div');
         div.id = as[0];
