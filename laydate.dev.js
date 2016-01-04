@@ -13,7 +13,7 @@
 //全局配置，如果采用默认均不需要改动
 var config =  {
     path: '', //laydate所在路径
-    defSkin: 'default', //初始化皮肤
+    skin: 'default', //初始化皮肤
     format: 'YYYY-MM-DD', //日期格式
     min: '1900-01-01 00:00:00', //最小日期
     max: '2099-12-31 23:59:59', //最大日期
@@ -169,7 +169,7 @@ Dates.run = function(options){
     elem = options.elem ? S(options.elem) : target;
 
     as.elemv = /textarea|input/.test(elem.tagName.toLocaleLowerCase()) ? 'value' : 'innerHTML';
-    if (config.init) elem[as.elemv] = laydate.now(null, options.format || config.format)
+    if (('init' in options ? options.init : config.init) && (!elem[as.elemv])) elem[as.elemv] = laydate.now(null, options.format || config.format);
 
     if(even && target.tagName){
         if(!elem || elem === Dates.elem){
@@ -192,6 +192,8 @@ Dates.run = function(options){
             });
         });
     }
+
+    chgSkin(options.skin || config.skin)
 };
 
 Dates.scroll = function(type){
@@ -845,7 +847,7 @@ Dates.events = function(){
 
 Dates.init = (function(){
     Dates.use('need');
-    Dates.use(as[4] + config.defSkin, as[3]);
+    Dates.use(as[4] + config.skin, as[3]);
     Dates.skinLink = Dates.query('#'+as[3]);
 }());
 
@@ -867,7 +869,10 @@ laydate.now = function(timestamp, format){
 };
 
 //皮肤选择
-laydate.skin = function(lib){
+laydate.skin = chgSkin;
+
+//内部函数
+function chgSkin(lib) {
     Dates.skinLink.href = Dates.getPath + as[4] + lib + as[5];
 };
 
