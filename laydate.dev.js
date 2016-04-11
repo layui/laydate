@@ -392,12 +392,12 @@ Dates.viewDate = function(Y, M, D){
         getCheck = null
     });
     Dates.addClass(as.mms[Dates.ymd[1]], as[2]);
-    
+
     //定位时分秒
     log.times = [
-        Dates.inymd[3]|0 || 0, 
-        Dates.inymd[4]|0 || 0, 
-        Dates.inymd[5]|0 || 0
+        Dates.inymd[Dates.elemIndexMap.hour]|0 || 0,
+        Dates.inymd[Dates.elemIndexMap.minute]|0 || 0,
+        Dates.inymd[Dates.elemIndexMap.second]|0 || 0
     ];
     Dates.each(new Array(3), function(i){
         Dates.hmsin[i].value = Dates.digit(Dates.timeVoid(log.times[i], i) ? Dates.mins[i+3]|0 : log.times[i]|0);
@@ -460,10 +460,34 @@ Dates.viewYears = function(YY){
     });
 };
 
+Dates.getEachElementIndex = function(format) {
+    var components = {};
+    var currentIndex = 0;
+    format.replace(/YYYY|MM|DD|hh|mm|ss/g, function(str, index){
+        if (str === 'YYYY') {
+            components['year'] = currentIndex++;
+        } else if (str === 'MM') {
+            components['month'] = currentIndex++;
+        } else if (str === 'DD') {
+            components['day'] = currentIndex++;
+        } else if (str === 'hh') {
+            components['hour'] = currentIndex++;
+        } else if (str === 'mm') {
+            components['minute'] = currentIndex++;
+        } else if (str === 'ss') {
+            components['second'] = currentIndex++;
+        }
+        return "";
+    });
+    return components;
+};
+
 //初始化面板数据
-Dates.initDate = function(){
+Dates.initDate = function(format){
     var S = Dates.query, log = {}, De = new Date();
     var ymd = Dates.elem[as.elemv].match(/\d+/g) || [];
+    var elemIndexMap = Dates.getEachElementIndex(format);
+    Dates.elemIndexMap = elemIndexMap;
     if(ymd.length < 3){
         ymd = Dates.options.start.match(/\d+/g) || [];
         if(ymd.length < 3){
@@ -471,7 +495,7 @@ Dates.initDate = function(){
         }
     }
     Dates.inymd = ymd;
-    Dates.viewDate(ymd[0], ymd[1]-1, ymd[2]);
+    Dates.viewDate(ymd[elemIndexMap.year], ymd[elemIndexMap.month] - 1, ymd[elemIndexMap.day]);
 };
 
 //是否显示零件
@@ -609,7 +633,7 @@ Dates.view = function(elem, options){
     options.zIndex ? Dates.box.style.zIndex = options.zIndex : Dates.removeCssAttr(Dates.box, 'z-index');
     Dates.stopMosup('click', Dates.box);
     
-    Dates.initDate();
+    Dates.initDate(options.format);
     Dates.iswrite();
     Dates.check();
 };
@@ -631,11 +655,24 @@ Dates.close = function(){
 
 //转换日期格式
 Dates.parse = function(ymd, hms, format){
-    ymd = ymd.concat(hms);
+    ymd = ymd.concat(hms); // [year, month, day, hour, minute, second]
     format = format || (Dates.options ? Dates.options.format : config.format);
     return format.replace(/YYYY|MM|DD|hh|mm|ss/g, function(str, index){
-        ymd.index = ++ymd.index|0;
-        return Dates.digit(ymd[ymd.index]);
+        var pos = -1;
+        if (str === 'YYYY') {
+            pos = 0;
+        } else if (str === 'MM') {
+            pos = 1;
+        } else if (str === 'DD') {
+            pos = 2;
+        } else if (str === 'hh') {
+            pos = 3;
+        } else if (str === 'mm') {
+            pos = 4;
+        } else if (str === 'ss') {
+            pos = 5;
+        }
+        return Dates.digit(ymd[pos]);
     });     
 };
 
