@@ -33,7 +33,10 @@
     <script type="text/javascript" src="../laydate.dev.js"></script>
     <script type="text/javascript">
         laydate({
-            elem: '#J-xl'
+            elem: '#J-xl',
+            onClear:function(){
+                console.log("清空按钮按下事件。");
+            }
         });
 
         document.getElementById('J-xl-2-btn').onclick = function(){
