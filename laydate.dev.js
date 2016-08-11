@@ -754,6 +754,7 @@ Dates.events = function(){
     Dates.on(as.oclear, 'click', function(){
         Dates.elem[as.elemv] = '';
         Dates.close();
+        (typeof Dates.options.onClear === 'function')&&Dates.options.onClear();
     });
     
     //今天
