@@ -30,25 +30,29 @@
     </div>
 
 
-    <script type="text/javascript" src="../laydate.dev.js"></script>
+    <script type="text/javascript" src="../laydate.js"></script>
     <script type="text/javascript">
         laydate({
-            elem: '#J-xl'
+            elem: '#J-xl',
+            format:   'YYYY-MM-DD hh:mm:ss', // 分隔符可以任意定义，该例子表示只显示年月
+            choose:   function(datas){
+                console.log(datas);
+            }
         });
 
-        document.getElementById('J-xl-2-btn').onclick = function(){
-            laydate({
-                elem: '#J-xl-2'
-            });
-        }
+        // document.getElementById('J-xl-2-btn').onclick = function(){
+        //     laydate({
+        //         elem: '#J-xl-2'
+        //     });
+        // }
 
-        laydate({
-            elem: '#J-xl-3'
-        });
+        // laydate({
+        //     elem: '#J-xl-3'
+        // });
 
-        laydate({
-            elem: document.getElementById('J-xl-4')
-        });
+        // laydate({
+        //     elem: document.getElementById('J-xl-4')
+        // });
     </script>
 </body>
 </html>
