@@ -760,7 +760,10 @@ Dates.events = function(){
     as.otoday = S('#laydate_today');
     Dates.on(as.otoday, 'click', function(){
         var now = new Date();
-        Dates.creation([now.getFullYear(), now.getMonth() + 1, now.getDate()]);
+        // 2016-09-23 18:20:54 修复选中今天choose方法得不到数据
+        // Dates.creation([now.getFullYear(), now.getMonth() + 1, now.getDate()]);
+        Dates.elem[as.elemv] = laydate.now(0,Dates.options.format);
+        Dates.creation([Dates.ymd[0], Dates.ymd[1]+1, Dates.ymd[2]]);
     });
     
     //确认
