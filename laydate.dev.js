@@ -762,7 +762,16 @@ Dates.events = function(){
         var now = new Date();
         // 2016-09-23 18:20:54 修复选中今天choose方法得不到数据
         // Dates.creation([now.getFullYear(), now.getMonth() + 1, now.getDate()]);
-        Dates.elem[as.elemv] = laydate.now(0,Dates.options.format);
+
+        // 2016-09-26 10:49:25 修复选中今天 如果YYYY-MM-DD hh:mm:ss格式，获取当前的时分秒
+        var hms = Dates.hmsin;
+        var date = new Date();
+        // 获取当前时间小时
+        hms[0].value = date.getHours();
+        // 获取当前时间分钟
+        hms[1].value = date.getMinutes();
+        // 获取当前时间秒
+        hms[2].value = date.getSeconds();
         Dates.creation([Dates.ymd[0], Dates.ymd[1]+1, Dates.ymd[2]]);
     });
     
