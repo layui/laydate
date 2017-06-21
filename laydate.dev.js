@@ -781,7 +781,11 @@ Dates.events = function(){
         Dates.on(elem, 'click', function(ev){
             if(!Dates.hasClass(this, as[1])){
                 Dates.stopmp(ev);
-                Dates.creation([this.getAttribute('y')|0, this.getAttribute('m')|0, this.getAttribute('d')|0]);
+                if(Dates.options.istime){
+ +                  Dates.viewDate([this.getAttribute('y')|0, (this.getAttribute('m')|0)-1, this.getAttribute('d')|0]);
+ +              }else{
+ +                  Dates.creation([this.getAttribute('y')|0, this.getAttribute('m')|0, this.getAttribute('d')|0]);
+ +              }
             }
         });
     });
