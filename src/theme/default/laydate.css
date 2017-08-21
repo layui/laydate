@@ -8,22 +8,8 @@
 
 html #layuicss-laydate{display: none; position: absolute; width: 1989px;}
 
-/** 图标字体 **/
-@font-face {font-family: 'laydate-icon';
-  src: url('./font/iconfont.eot');
-  src: url('./font/iconfont.eot#iefix') format('embedded-opentype'),
-  url('./font/iconfont.svg#iconfont') format('svg'),
-  url('./font/iconfont.woff') format('woff'),
-  url('./font/iconfont.ttf') format('truetype');
-}
-                    
-.laydate-icon{
-  font-family:"laydate-icon" !important;
-  font-size: 16px;
-  font-style: normal;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+/* 初始化 */
+.layui-laydate *{margin: 0; padding: 0;}
 
 /* 主体结构 */
 .layui-laydate, .layui-laydate *{box-sizing: border-box;}
@@ -122,7 +108,7 @@ html #layuicss-laydate{display: none; position: absolute; width: 1989px;}
 .laydate-selected:hover{background-color: #00F7DE !important;}
 .layui-laydate-content td:hover,
 .layui-laydate-list li:hover{background-color: #eaeaea; color: #333;}
-.laydate-time-list li ol{border: 1px solid #e2e2e2; border-left-width: 0;}
+.laydate-time-list li ol{margin: 0; padding: 0; border: 1px solid #e2e2e2; border-left-width: 0;}
 .laydate-time-list li:first-child ol{border-left-width: 1px;}
 .laydate-time-list>li:hover{background: none;}
 .layui-laydate-content .laydate-day-prev,
