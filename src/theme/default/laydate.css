@@ -11,6 +11,23 @@ html #layuicss-laydate{display: none; position: absolute; width: 1989px;}
 /* 初始化 */
 .layui-laydate *{margin: 0; padding: 0;}
 
+/** 图标字体 **/
+@font-face {font-family: 'laydate-icon';
+  src: url('./font/iconfont.eot');
+  src: url('./font/iconfont.eot#iefix') format('embedded-opentype'),
+  url('./font/iconfont.svg#iconfont') format('svg'),
+  url('./font/iconfont.woff') format('woff'),
+  url('./font/iconfont.ttf') format('truetype');
+}
+                    
+.laydate-icon{
+  font-family:"laydate-icon" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 /* 主体结构 */
 .layui-laydate, .layui-laydate *{box-sizing: border-box;}
 .layui-laydate{position: absolute; z-index: 66666666; margin: 5px 0; border-radius: 2px; font-size: 14px; -webkit-animation-duration: 0.3s; animation-duration: 0.3s; -webkit-animation-fill-mode: both; animation-fill-mode: both;}
