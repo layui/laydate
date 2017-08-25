@@ -16,4 +16,5 @@ Thumbs.db
 .settings/
 node_modules/
 _site/
+release/
 .npmignore
