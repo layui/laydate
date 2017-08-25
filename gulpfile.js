@@ -11,6 +11,10 @@ var rename = require('gulp-rename');
 var header = require('gulp-header');
 var del = require('del');
 
+//发行版本目录
+var releaseDir = './release/layDate-v' + pkg.version;
+var release = releaseDir + '/laydate';
+
 var task = {
   laydate: function() {
     gulp.src('./src/**/*.css')
@@ -37,6 +41,14 @@ gulp.task('clear', function(cb){ //清理
 });
 gulp.task('laydate', task.minjs); //压缩PC版本
 gulp.task('other', task.other); //移动一些配件
+
+gulp.task('r', function(){
+  gulp.src('./release/doc/**/*')
+  .pipe(gulp.dest(releaseDir))
+  
+  return gulp.src('./dist/**/*')
+  .pipe(gulp.dest(releaseDir + '/laydate'))
+});
 
 //全部
 gulp.task('default', ['clear'], function(){

@@ -1,6 +1,6 @@
 {
   "name": "layui-laydate",
-  "version": "5.0.1",
+  "version": "5.0.2",
   "alias": "laydate",
   "description": "日期与时间组件",
   "main": "src/laydate.js",
