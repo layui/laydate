@@ -1250,7 +1250,11 @@
           that.checkDate('limit').calendar();
           that.closeList();
         }
-
+        if(!options.range&&!options.showBottom&&options.type==="month"&&type==="month"){
+          that.done();
+          that.setValue(that.parse()).remove();
+          return;
+        }
         that.setBtnStatus(); //同步按钮可点状态
         options.range || that.done(null, 'change');
         lay(that.footer).find(ELEM_TIME_BTN).removeClass(DISABLED);
