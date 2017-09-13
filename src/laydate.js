@@ -1254,6 +1254,10 @@
         that.setBtnStatus(); //同步按钮可点状态
         options.range || that.done(null, 'change');
         lay(that.footer).find(ELEM_TIME_BTN).removeClass(DISABLED);
+        if(!options.range&&options.type==="month"&&!options.showBottom&&lay(this.parentNode).hasClass("laydate-month-list")){
+          that.done();
+          that.setValue(that.parse()).remove();
+        }
       });
     } else {
       var span = lay.elem('span', {
