@@ -1,16 +1,3 @@
-/**
- 
- @Name: laydata
- @Author: 贤心
- 
- **/
- 
-
-html #layuicss-laydate{display: none; position: absolute; width: 1989px;}
-
-/* 初始化 */
-.layui-laydate *{margin: 0; padding: 0;}
-
 /** 图标字体 **/
 @font-face {font-family: 'laydate-icon';
   src: url('./font/iconfont.eot');
@@ -27,6 +14,19 @@ html #layuicss-laydate{display: none; position: absolute; width: 1989px;}
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/**
+ 
+ @Name: laydata
+ @Author: 贤心
+ 
+ **/
+ 
+
+html #layuicss-laydate{display: none; position: absolute; width: 1989px;}
+
+/* 初始化 */
+.layui-laydate *{margin: 0; padding: 0;}
 
 /* 主体结构 */
 .layui-laydate, .layui-laydate *{box-sizing: border-box;}

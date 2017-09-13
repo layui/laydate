@@ -12,7 +12,7 @@ var header = require('gulp-header');
 var del = require('del');
 
 //发行版本目录
-var releaseDir = './release/layDate-v' + pkg.version;
+var releaseDir = './release/zip/layDate-v' + pkg.version;
 var release = releaseDir + '/laydate';
 
 var task = {
@@ -42,7 +42,10 @@ gulp.task('clear', function(cb){ //清理
 gulp.task('laydate', task.minjs); //压缩PC版本
 gulp.task('other', task.other); //移动一些配件
 
-gulp.task('r', function(){
+gulp.task('clearZip', function(cb){ //清理
+  return del(['./release/zip/*'], cb);
+});
+gulp.task('r', ['clearZip'], function(){
   gulp.src('./release/doc/**/*')
   .pipe(gulp.dest(releaseDir))
   
