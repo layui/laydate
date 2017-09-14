@@ -42,6 +42,7 @@ gulp.task('clear', function(cb){ //清理
 gulp.task('laydate', task.minjs); //压缩PC版本
 gulp.task('other', task.other); //移动一些配件
 
+//打包发行版
 gulp.task('clearZip', function(cb){ //清理
   return del(['./release/zip/*'], cb);
 });
