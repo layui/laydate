@@ -1,7 +1,7 @@
 ﻿{
   "name": "layui-laydate",
   "realname": "laydate",
-  "version": "5.0.7",
+  "version": "5.0.8",
   "description": "日期与时间组件",
   "main": "src/laydate.js",
   "license": "MIT",
