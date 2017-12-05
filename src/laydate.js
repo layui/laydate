@@ -1,6 +1,6 @@
 /**
  
- @Name : layDate 5.0.85 日期时间控件
+ @Name : layDate 5.0.9 日期时间控件
  @Author: 贤心
  @Site：http://www.layui.com/laydate/
  @License：MIT
@@ -12,8 +12,18 @@
 
   var isLayui = window.layui && layui.define, ready = {
     getPath: function(){
-      var js = document.scripts, script = js[js.length - 1], jsPath = script.src;
-      if(script.getAttribute('merge')) return;
+      var jsPath = document.currentScript ? document.currentScript.src : function(){
+        var js = document.scripts
+        ,last = js.length - 1
+        ,src;
+        for(var i = last; i > 0; i--){
+          if(js[i].readyState === 'interactive'){
+            src = js[i].src;
+            break;
+          }
+        }
+        return src || js[last].src;
+      }();
       return jsPath.substring(0, jsPath.lastIndexOf('/') + 1);
     }()
     
@@ -55,7 +65,7 @@
   }
 
   ,laydate = {
-    v: '5.0.85'
+    v: '5.0.9'
     ,config: {} //全局配置项
     ,index: (window.laydate && window.laydate.v) ? 100000 : 0
     ,path: ready.getPath
@@ -63,7 +73,7 @@
     //设置全局项
     ,set: function(options){
       var that = this;
-      that.config = ready.extend({}, that.config, options);
+      that.config = lay.extend({}, that.config, options);
       return that;
     }
     
@@ -1379,6 +1389,7 @@
   
   //创建指定日期时间对象
   Class.prototype.newDate = function(dateTime){
+    dateTime = dateTime || {};
     return new Date(
       dateTime.year || 1
       ,dateTime.month || 0
