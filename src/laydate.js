@@ -675,7 +675,7 @@
     
     //生成底部栏
     lay(divFooter).html(function(){
-      var html = [], btns = [];
+      var html = [], btns = [], shortcuts = [];
       if(options.type === 'datetime'){
         html.push('<span lay-type="datetime" class="laydate-btns-time">'+ lang.timeTips +'</span>');
       }
@@ -683,9 +683,22 @@
         var title = lang.tools[item] || 'btn';
         if(options.range && item === 'now') return;
         if(isStatic && item === 'clear') title = options.lang === 'cn' ? '重置' : 'Reset';
-        btns.push('<span lay-type="'+ item +'" class="laydate-btns-'+ item +'">'+ title +'</span>');
+        btns.push('<span lay-type="' + item + '" class="laydate-btns-' + item + '">' + title + '</span>');
       });
-      html.push('<div class="laydate-footer-btns">'+ btns.join('') +'</div>');
+
+      if (options.range) {
+          if (that.config.type == 'date') {
+              shortcuts.push('<span lay-type="shortcut" class="laydate-shortcut-btn" data-type="day" data-count="30">' + (options.lang == 'cn' ? '最近30天' : '30days') + '</span>');
+              shortcuts.push('<span lay-type="shortcut" class="laydate-shortcut-btn" data-type="month" data-count="1">' + (options.lang == 'cn' ? '上月' : '-1month') + '</span>');
+              shortcuts.push('<span lay-type="shortcut" class="laydate-shortcut-btn" data-type="month" data-count="0">' + (options.lang == 'cn' ? '本月' : 'month') + '</span>');
+          }
+          shortcuts.push('<span lay-type="shortcut" class="laydate-shortcut-btn" data-type="quarter" data-count="1">' + (options.lang == 'cn' ? '上季度' : '-1quarter') + '</span>');
+          shortcuts.push('<span lay-type="shortcut" class="laydate-shortcut-btn" data-type="quarter" data-count="0">' + (options.lang == 'cn' ? '本季度' : 'quarter') + '</span>');
+          shortcuts.push('<span lay-type="shortcut" class="laydate-shortcut-btn" data-type="year" data-count="1">' + (options.lang == 'cn' ? '上年' : '-1year') + '</span>');
+          shortcuts.push('<span lay-type="shortcut" class="laydate-shortcut-btn" data-type="year" data-count="0">' + (options.lang == 'cn' ? '今年' : 'year') + '</span>');
+      }
+
+        html.push('<div class="laydate-footer-shortcuts">' + shortcuts.join('') + '</div><div class="laydate-footer-btns">' + btns.join('') + '</div>');
       return html.join('');
     }());
     
@@ -1231,6 +1244,11 @@
           dateTime[type] = ym;
           if(isAlone) that.startDate[type] = ym;
           that.limit(lay(that.footer).find(ELEM_CONFIRM), null, 0);
+            
+            // 如果是年或者月模式，选中日期就关闭弹框
+            if ((type == "month" && that.config.type == "month") || (type == "year" && that.config.type == "year")) {
+                that.setValue(that.parse()).remove().done();
+            }
         } else { //范围选择
           if(isAlone){ //非date/datetime类型
             that.endDate[type] = ym;
@@ -1590,8 +1608,108 @@
         that.closeList();
         lay(btn).attr('lay-type', 'datetime').html(that.lang().timeTips);
       }
-      
-      //清空、重置
+
+        // 快速选择日期
+        , shortcut: function () {
+            var $btn = btn;
+            var type = $btn.getAttribute("data-type");
+            var count = $btn.getAttribute("data-count");
+            var currentDate = new Date();
+            var addDays = function (curDate, d) {
+                curDate.setDate(curDate.getDate() + d);
+            };
+            var addMonths = function (curDate, m) {
+                var d = curDate.getDate();
+                curDate.setMonth(curDate.getMonth() + m);
+                if (curDate.getDate() < d)
+                    curDate.setDate(0);
+            };
+            var addYears = function (curDate, y) {
+                var m = curDate.getMonth();
+                curDate.setFullYear(curDate.getFullYear() + y);
+                if (m < curDate.getMonth()) {
+                    curDate.setDate(0);
+                }
+            };
+
+            // 默认
+            that.endDate = {
+                year: currentDate.getFullYear(),
+                month: currentDate.getMonth(),
+                date: currentDate.getDate(),
+                hours: currentDate.getHours(),
+                minutes: currentDate.getMinutes(),
+                seconds: currentDate.getSeconds()
+            };
+
+            if (type == "day") {
+                addDays(currentDate, -count);
+            } else if (type == "month") {
+                if (count == 0) {
+                    currentDate.setDate(1);
+                } else {
+                    addMonths(currentDate, -1);
+                    that.endDate.date = new Date((new Date().setDate(0))).getDate();
+                    that.endDate.month = currentDate.getMonth();
+                    currentDate.setDate(1);
+                }
+            } else if (type == "quarter") {
+                if (count == 0) {
+                    addMonths(currentDate, -(2 - (that.endDate.month + 1) % 3));
+                } else {
+                    that.endDate.month = that.endDate.month - (3 - (that.endDate.month + 1) % 3);
+                    that.endDate.month = that.endDate.month < 0 ? 12 + that.endDate.month : that.endDate.month;
+                    currentDate.setMonth(that.endDate.month - 2);
+                    that.endDate.date = new Date(that.endDate.year, that.endDate.month + 1, "0").getDate();
+                }
+            } else if (type == "year") {
+                if (count == 0) {
+                    currentDate.setMonth(0);
+                    currentDate.setDate(1);
+                } else {
+                    addYears(currentDate, -1);
+                    that.endDate.year = currentDate.getFullYear();
+                    that.endDate.month = 11;
+                    that.endDate.date = 31;
+                    currentDate.setMonth(0);
+                }
+            }
+
+            that.config.dateTime = {
+                year: currentDate.getFullYear(),
+                month: currentDate.getMonth(),
+                date: currentDate.getDate(),
+                hours: currentDate.getHours(),
+                minutes: currentDate.getMinutes(),
+                seconds: currentDate.getSeconds()
+            };
+            that.startDate = {
+                year: currentDate.getFullYear(),
+                month: currentDate.getMonth(),
+                date: currentDate.getDate(),
+                hours: currentDate.getHours(),
+                minutes: currentDate.getMinutes(),
+                seconds: currentDate.getSeconds()
+            };
+            that.startYMD = {
+                year: currentDate.getFullYear(),
+                month: currentDate.getMonth(),
+                date: currentDate.getDate()
+            };
+
+            that.stampRange();
+            that.startState = true;
+            that.endState = true;
+            if (lay('.layui-laydate').length > 0) {
+                that.calendar();
+            }
+            that.setValue(that.parse()).remove();
+            that.done(null, 'change');
+
+            lay(that.footer).find(ELEM_CONFIRM).removeClass(DISABLED);
+        }
+
+        //清空、重置
       ,clear: function(){
         that.setValue('').remove();
         isStatic && (
@@ -1647,10 +1765,11 @@
     
     ,elemCont = that.elemCont[index || 0]
     ,listYM = that.listYM[index]
-    ,addSubYeay = function(type){
+    ,addSubYeay = function(type, number){
       var startEnd = ['startDate', 'endDate'][index]
       ,isYear = lay(elemCont).find('.laydate-year-list')[0]
-      ,isMonth = lay(elemCont).find('.laydate-month-list')[0];
+      ,isMonth = lay(elemCont).find('.laydate-month-list')[0]
+      ,number = number === undefined ? 1 : number;
       
       //切换年列表
       if(isYear){
@@ -1659,7 +1778,7 @@
       }
       
       if(isMonth){ //切换月面板中的年
-        type ? listYM[0]-- : listYM[0]++;
+        type ? listYM[0] = listYM[0] - number : listYM[0] = listYM[0] + number;
         that.list('month', index);
       }
       
@@ -1684,6 +1803,13 @@
         that.checkDate('limit').calendar();
         options.range || that.done(null, 'change');
       }
+      ,goToYear: function (year) {
+          var diffYear = year - dateTime.year;
+          if (addSubYeay('sub', diffYear)) return;
+          dateTime.year = year;
+          that.checkDate('limit').calendar();
+          options.range || that.done(null, 'change');
+      }
       ,prevMonth: function(){
         var YM = that.getAsYM(dateTime.year, dateTime.month, 'sub');
         lay.extend(dateTime, {
@@ -1701,6 +1827,13 @@
         });
         that.checkDate('limit').calendar();
         options.range || that.done(null, 'change');
+      }
+      ,goToMonth: function (month) {
+          lay.extend(dateTime, {
+              month: month
+          });
+          that.checkDate('limit').calendar();
+          options.range || that.done(null, 'change');
       }
       ,nextYear: function(){
         if(addSubYeay()) return;
@@ -1813,8 +1946,79 @@
         }
       }
     });
-    
-    //自适应定位
+  
+    // 手动输入日期，日历同步跳转
+    if (!options.range && (options.type == "month" || options.type == "date")) {
+        lay(options.elem[0]).on('keyup', function (e) {
+            var dateTime = options.dateTime;
+            var value = e.currentTarget.value;
+
+            if (options.lang == "cn") {
+                if (/^(\d{4})[\s\-\\]?([0-1][0-9])[\s\-\\]?([0-3][0-9])$/ig.test(value)) {
+                    lay.extend(dateTime, {
+                        year: parseInt(RegExp.$1),
+                        month: parseInt(RegExp.$2) - 1,
+                        date: parseInt(RegExp.$3)
+                    });
+                    that.setValue(that.parse(1, dateTime));
+                    that.checkDate('limit').calendar();
+                    that.done(null, 'change');
+                } else if (/^(\d{4})[\s\-\\]?([0-1][0-9])$/ig.test(value)) {
+                    lay.extend(dateTime, {
+                        year: parseInt(RegExp.$1),
+                        month: parseInt(RegExp.$2) - 1
+                    });
+                    if (options.type == "month") {
+                        that.setValue(that.parse(1, dateTime));
+                    }
+                    that.change(0).goToMonth(dateTime.month);
+                } else if (/^(\d{4})$/ig.test(value)) {
+                    lay.extend(dateTime, {
+                        year: parseInt(RegExp.$1)
+                    });
+                    if (options.type == "year") {
+                        that.setValue(that.parse(1, dateTime));
+                    }
+                    that.change(0).goToYear(dateTime.year);
+                }
+
+            } else if (options.lang == "en") {
+                if (/^([0-1][0-9])$/ig.test(value) && (options.type == "month" || options.type == "date" )) {
+                    lay.extend(dateTime, {
+                        month: parseInt(RegExp.$1) - 1
+                    });
+                    that.change(0).goToMonth(dateTime.month);
+                } else if (/^([0-1][0-9])[\s\-\\]?([0-1][0-9])$/ig.test(value) && options.type == "date") {
+                    lay.extend(dateTime, {
+                        month: parseInt(RegExp.$1) - 1,
+                        date: parseInt(RegExp.$2)
+                    });
+                    that.checkDate('limit').calendar();
+                    that.done(null, 'change');
+                } else if (/^([0-1][0-9])[\s\-\\]?(\d{4})$/ig.test(value) && options.type == "month") {
+                    lay.extend(dateTime, {
+                        year: parseInt(RegExp.$2),
+                        month: parseInt(RegExp.$1) - 1
+                    });
+                    that.listYM[0] = [dateTime.year, dateTime.month];
+                    that.change(0).goToYear(dateTime.year);
+                    that.setValue(that.parse(1, dateTime));
+                } else if (/^([0-1][0-9])[\s\-\\]?([0-1][0-9])[\s\-\\]?(\d{4})$/ig.test(value)) {
+                    lay.extend(dateTime, {
+                        year: parseInt(RegExp.$3),
+                        month: parseInt(RegExp.$1) - 1,
+                        date: parseInt(RegExp.$2)
+                    });
+                    that.listYM[0] = [dateTime.year, dateTime.month];
+                    that.change(0).goToYear(dateTime.year);
+                    that.setValue(that.parse(1, dateTime));
+                }
+            }
+
+        });
+    }
+
+      //自适应定位
     lay(window).on('resize', function(){
       if(!that.elem || !lay(ELEM)[0]){
         return false;
