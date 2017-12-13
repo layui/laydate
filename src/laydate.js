@@ -2000,7 +2000,7 @@
                         year: parseInt(RegExp.$2),
                         month: parseInt(RegExp.$1) - 1
                     });
-                    that.listYM[0] = [dateTime.year, dateTime.month];
+                    that.listYM[0] = [dateTime.year, RegExp.$1];
                     that.change(0).goToYear(dateTime.year);
                     that.setValue(that.parse(1, dateTime));
                 } else if (/^([0-1][0-9])[\s\-\\]?([0-1][0-9])[\s\-\\]?(\d{4})$/ig.test(value)) {
@@ -2009,7 +2009,7 @@
                         month: parseInt(RegExp.$1) - 1,
                         date: parseInt(RegExp.$2)
                     });
-                    that.listYM[0] = [dateTime.year, dateTime.month];
+                    that.listYM[0] = [dateTime.year, RegExp.$1];
                     that.change(0).goToYear(dateTime.year);
                     that.setValue(that.parse(1, dateTime));
                 }
