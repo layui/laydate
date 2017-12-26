@@ -391,6 +391,7 @@
     ,zIndex: null //控件层叠顺序
     ,done: null //控件选择完毕后的回调，点击清空/现在/确定也均会触发
     ,change: null //日期时间改变后的回调
+    ,mondayStart: false //是否以周一为一周的开始，默认以周日开始
   };
   
   //多语言
@@ -652,7 +653,7 @@
         lay.each(new Array(7), function(j){
           if(i === 0){
             var th = lay.elem('th');
-            th.innerHTML = lang.weeks[j];
+            th.innerHTML = options.mondayStart ? lang.weeks[(j+1)%7] : lang.weeks[j];
             theadTr.appendChild(th);
           }
           tr.insertCell(j);
@@ -1015,8 +1016,8 @@
     
     //计算当前月第一天的星期
     thisDate.setFullYear(dateTime.year, dateTime.month, 1);
-    startWeek = thisDate.getDay();
-    
+    startWeek = options.mondayStart ? thisDate.getDay()-1 : thisDate.getDay();
+
     prevMaxDate = laydate.getEndDate(dateTime.month || 12, dateTime.year); //计算上个月的最后一天
     thisMaxDate = laydate.getEndDate(dateTime.month + 1, dateTime.year); //计算当前月的最后一天
     
