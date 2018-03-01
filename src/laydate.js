@@ -723,7 +723,7 @@
       ,that.position() //定位
     );
     
-    that.checkDate().calendar(); //初始校验
+    that.checkDate().calendar(null, true); //初始校验
     that.changeEvent(); //日期切换
     
     Class.thisElemDate = that.elemID;
@@ -993,10 +993,13 @@
   };
   
   //日历表
-  Class.prototype.calendar = function(value){
+  Class.prototype.calendar = function(value, isShowEventInitCalen){
     var that = this
     ,options = that.config
-    ,dateTime = value || options.dateTime
+    ,dateTime = value || (options.dateTime = 
+      isShowEventInitCalen && that.newDate(options.dateTime).getTime() < that.newDate(options.min).getTime() ? //'弹出','重置','现在' 如果当前时间 小于 最小限制时间,直接从最小限制时间开始展示
+       lay.extend({}, options.min) : options.dateTime
+    )
     ,thisDate = new Date(), startWeek, prevMaxDate, thisMaxDate
     ,lang = that.lang()
     
@@ -1004,7 +1007,7 @@
     ,index = value ? 1 : 0
     ,tds = lay(that.table[index]).find('td')
     ,elemYM = lay(that.elemHeader[index][2]).find('span');
-    
+
     if(dateTime.year < LIMIT_YEAR[0]) dateTime.year = LIMIT_YEAR[0], that.hint('最低只能支持到公元'+ LIMIT_YEAR[0] +'年');
     if(dateTime.year > LIMIT_YEAR[1]) dateTime.year = LIMIT_YEAR[1], that.hint('最高只能支持到公元'+ LIMIT_YEAR[1] +'年');
     
@@ -1486,7 +1489,7 @@
     ,YMD = td.attr('lay-ymd').split('-')
     
     ,setDateTime = function(one){
-      var thisDate = new Date();
+      // var thisDate = new Date(); //useless
       
       //同步dateTime
       one && lay.extend(dateTime, YMD);
@@ -1596,7 +1599,7 @@
         that.setValue('').remove();
         isStatic && (
           lay.extend(dateTime, that.firstDate)
-          ,that.calendar()
+          ,that.calendar(null, true)
         )
         options.range && (
           delete that.startState
@@ -1617,7 +1620,7 @@
           ,seconds: thisDate.getSeconds()
         });
         that.setValue(that.parse()).remove();
-        isStatic && that.calendar();
+        isStatic && that.calendar(null, true);
         that.done();
       }
       
