@@ -49,18 +49,19 @@
       link.id = id;
       
       if(!document.getElementById(id)){
-        head.appendChild(link);
+        // head.appendChild(link); // zhaojiami
       }
       
       if(typeof fn !== 'function') return;
       
       //轮询css是否加载完毕
-      (function poll() { 
-        if(++timeout > 8 * 1000 / 100){
-          return window.console && console.error('laydate.css: Invalid');
-        };
-        parseInt(ready.getStyle(document.getElementById(id), 'width')) === 1989 ? fn() : setTimeout(poll, 100);
-      }());
+      // (function poll() { // zhaojiami
+      //   if(++timeout > 8 * 1000 / 100){
+      //     return window.console && console.error('laydate.css: Invalid');
+      //   };
+      //   parseInt(ready.getStyle(document.getElementById(id), 'width')) === 1989 ? fn() : setTimeout(poll, 100);
+      // }());
+      fn(); // zhaojiami
     }
   }
 
@@ -439,6 +440,7 @@
     ,format = {
       year: 'yyyy'
       ,month: 'yyyy-MM'
+      ,week: 'yyyy-MM-dd' // zhaojiami
       ,date: 'yyyy-MM-dd'
       ,time: 'HH:mm:ss'
       ,datetime: 'yyyy-MM-dd HH:mm:ss'
@@ -481,7 +483,10 @@
     that.EXP_IF = new RegExp('^'+ (
       options.range ? 
         that.EXP_IF + '\\s\\'+ options.range + '\\s' + that.EXP_IF
-      : that.EXP_IF
+      : (/* zhaojiami */ options.type === 'week' ? /* zhaojiami */
+        that.EXP_IF + '\\s\\'+ '~' + '\\s' + that.EXP_IF
+        : that.EXP_IF
+      )
     ) +'$');
     that.EXP_SPLIT = new RegExp('^'+ that.EXP_SPLIT +'$', '');
     
@@ -546,7 +551,7 @@
     
     if(options.show || isStatic) that.render();
     isStatic || that.events();
-    
+    // console.log('[init], that:', that); // zhaojiami
     //默认赋值
     if(options.value){
       if(options.value.constructor === Date){
@@ -722,12 +727,12 @@
       document.body.appendChild(elem)
       ,that.position() //定位
     );
-    
+    // console.log('[render], options:', options); // zhaojiami
     that.checkDate().calendar(null, true); //初始校验
     that.changeEvent(); //日期切换
     
     Class.thisElemDate = that.elemID;
-
+    
     typeof options.ready === 'function' && options.ready(lay.extend({}, options.dateTime, {
       month: options.dateTime.month + 1
     }));
@@ -831,6 +836,7 @@
   
   //日期校验
   Class.prototype.checkDate = function(fn){
+    // console.log('[checkDate]'); // zhaojiami
     var that = this
     ,thisDate = new Date()
     ,options = that.config
@@ -862,6 +868,9 @@
       if(options.range){
         that[startEnd[index]] = that[startEnd[index]] || {};
       }
+      if(options.type === 'week'){ // zhaojiami
+        that[startEnd[index]] = that[startEnd[index]] || {};
+      }
       lay.each(that.format, function(i, item){
         var thisv = parseFloat(value[i]);
         if(value[i].length < item.length) error = true;
@@ -888,6 +897,7 @@
           options.range && (that[startEnd[index]].seconds = thisv);
         }
       });
+      // console.log('[initDate], dateTime:', JSON.stringify(dateTime));
       checkValid(dateTime)
     };
     
@@ -915,7 +925,18 @@
             initDate(item, value[i], i);
           });
         } else {
-          initDate(dateTime, value)
+          /* zhaojiami */
+          if(options.type === 'week') {
+            value = value.split(' '+ '~' +' ');
+            that.startDate = that.startDate || that.systemDate();
+            that.endDate = that.endDate || that.systemDate();
+            options.dateTime = lay.extend({}, that.startDate);
+            lay.each([that.startDate, that.endDate], function(i, item){
+              initDate(item, value[i], i);
+            });
+          } else {
+            initDate(dateTime, value)
+          }
         }
       } else {
         that.hint('日期格式不合法<br>必须遵循下述格式：<br>'+ (
@@ -1003,7 +1024,7 @@
     ,thisDate = new Date(), startWeek, prevMaxDate, thisMaxDate
     ,lang = that.lang()
     
-    ,isAlone = options.type !== 'date' && options.type !== 'datetime'
+    ,isAlone = options.type !== 'date' && options.type !== 'datetime'/* zhaojiami */ && options.type !== 'week'
     ,index = value ? 1 : 0
     ,tds = lay(that.table[index]).find('td')
     ,elemYM = lay(that.elemHeader[index][2]).find('span');
@@ -1034,7 +1055,7 @@
         YMD = that.getAsYM(dateTime.year, dateTime.month, 'sub');
       } else if(index >= startWeek && index < thisMaxDate + startWeek){
         st = index - startWeek;
-        if(!options.range){
+        if(!options.range/* zhaojiami */ && !(options.type === 'week')/* zhaojiami */){
           st + 1 === dateTime.date && item.addClass(THIS);
         }
       } else {
@@ -1107,6 +1128,8 @@
     
     //标记选择范围
     if(options.range && value && !isAlone) that.stampRange();
+    if(options.type === 'week') that.stampRange(); // zhaojiami
+    // console.log('[calendar], that:', that); // zhaojiami
     return that;
   };
 
@@ -1360,9 +1383,13 @@
   Class.prototype.parse = function(state, date){
     var that = this
     ,options = that.config
-    ,dateTime = date || (state 
-      ? lay.extend({}, that.endDate, that.endTime)
-    : (options.range ? lay.extend({}, that.startDate, that.startTime) : options.dateTime))
+    ,dateTime = date || (state ?
+      lay.extend({}, that.endDate, that.endTime)
+      : ((options.range || options.type === 'week') ?
+          lay.extend({}, that.startDate, that.startTime) 
+          : options.dateTime
+        )
+    )
     ,format = that.format.concat();
 
     //转义为规定格式
@@ -1385,6 +1412,10 @@
     //返回日期范围字符
     if(options.range && !state){
       return format.join('') + ' '+ options.range +' ' + that.parse(1);
+    }
+    // zhaojiami
+    if(options.type === 'week' && !state) {
+      return format.join('') + ' '+ '~' +' ' + that.parse(1);
     }
     
     return format.join('');
@@ -1489,7 +1520,7 @@
     ,YMD = td.attr('lay-ymd').split('-')
     
     ,setDateTime = function(one){
-      // var thisDate = new Date(); //useless
+      var thisDate = new Date(); //useless zhaojiami
       
       //同步dateTime
       one && lay.extend(dateTime, YMD);
@@ -1570,7 +1601,57 @@
     } else if(options.type === 'datetime'){
       setDateTime(true);
       that.calendar().done(null, 'change');
+    } else if(options.type === 'week'){
+      // console.log('[choose], type=week start');
+      var addDays = function (date, n) {
+        return new Date(new Date(date).getTime() + n*(24*60*60*1000));
+      }
+      , selectedDate = that.newDate(lay.extend(dateTime, YMD))
+      , day = selectedDate.getDay()
+      , mondayDate = addDays(selectedDate, 1 - day)
+      , sundayDate = addDays(selectedDate, 7 - day);
+
+      that.endDate = {
+        year: sundayDate.getFullYear(),
+        month: sundayDate.getMonth(),
+        date: sundayDate.getDate(),
+        hours: sundayDate.getHours(),
+        minutes: sundayDate.getMinutes(),
+        seconds: sundayDate.getSeconds()
+      };
+      that.startDate = {
+        year: mondayDate.getFullYear(),
+        month: mondayDate.getMonth(),
+        date: mondayDate.getDate(),
+        hours: mondayDate.getHours(),
+        minutes: mondayDate.getMinutes(),
+        seconds: mondayDate.getSeconds()
+      };
+      that.startYMD = {
+        year: mondayDate.getFullYear(),
+        month: mondayDate.getMonth(),
+        date: mondayDate.getDate()
+      };
+      that.config.dateTime = {
+        year: mondayDate.getFullYear(),
+        month: mondayDate.getMonth(),
+        date: mondayDate.getDate(),
+        hours: mondayDate.getHours(),
+        minutes: mondayDate.getMinutes(),
+        seconds: mondayDate.getSeconds()
+      };
+
+      that.startState = true;
+      that.stampRange();
+      that.endState = true;
+      // that.calendar();
+
+      that.setValue(that.parse())/* .remove() */;
+      that.done(null, 'change');
+
+      lay(that.footer).find(ELEM_CONFIRM).removeClass(DISABLED);
     }
+    // console.log('[choose], that:', that);
   };
   
   //底部按钮
@@ -1685,7 +1766,7 @@
         if(addSubYeay('sub')) return;
         dateTime.year--;
         that.checkDate('limit').calendar();
-        options.range || that.done(null, 'change');
+        (options.range || options.type === 'week') || that.done(null, 'change');
       }
       ,prevMonth: function(){
         var YM = that.getAsYM(dateTime.year, dateTime.month, 'sub');
@@ -1694,7 +1775,7 @@
           ,month: YM[1]
         });
         that.checkDate('limit').calendar();
-        options.range || that.done(null, 'change');
+        (options.range || options.type === 'week') || that.done(null, 'change');
       }
       ,nextMonth: function(){
         var YM = that.getAsYM(dateTime.year, dateTime.month);
@@ -1703,13 +1784,13 @@
           ,month: YM[1]
         });
         that.checkDate('limit').calendar();
-        options.range || that.done(null, 'change');
+        (options.range || options.type === 'week') || that.done(null, 'change');
       }
       ,nextYear: function(){
         if(addSubYeay()) return;
         dateTime.year++
         that.checkDate('limit').calendar();
-        options.range || that.done(null, 'change');
+        (options.range || options.type === 'week') || that.done(null, 'change');
       }
     };
   };

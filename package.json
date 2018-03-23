@@ -1,8 +1,8 @@
-﻿{
+{
   "name": "layui-laydate",
   "realname": "laydate",
   "version": "5.0.9",
-  "description": "日期与时间组件",
+  "description": "日期与时间组件(5.0.9.2订制)",
   "main": "src/laydate.js",
   "license": "MIT",
   "scripts": {
@@ -12,7 +12,7 @@
     "type": "https",
     "url": "git+https://github.com/sentsin/laydate.git"
   },
-  "author": "贤心",
+  "author": "贤心;zhaojiami(5.0.9.2)",
   "homepage": "http://www.layui.com/laydate/",
   "devDependencies": {
     "gulp": "^3.9.0",
