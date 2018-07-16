@@ -101,7 +101,7 @@
   //字符常量
   ,MOD_NAME = 'laydate', ELEM = '.layui-laydate', THIS = 'layui-this', SHOW = 'layui-show', HIDE = 'layui-hide', DISABLED = 'laydate-disabled', TIPS_OUT = '开始日期超出了结束日期<br>建议重新选择', LIMIT_YEAR = [100, 200000]
   
-  ,ELEM_STATIC = 'layui-laydate-static', ELEM_LIST = 'layui-laydate-list', ELEM_SELECTED = 'laydate-selected', ELEM_HINT = 'layui-laydate-hint', ELEM_PREV = 'laydate-day-prev', ELEM_NEXT = 'laydate-day-next', ELEM_FOOTER = 'layui-laydate-footer', ELEM_CONFIRM = '.laydate-btns-confirm', ELEM_TIME_TEXT = 'laydate-time-text', ELEM_TIME_BTN = '.laydate-btns-time'
+  ,ELEM_STATIC = 'layui-laydate-static', ELEM_LIST = 'layui-laydate-list', ELEM_SELECTED = 'laydate-selected', ELEM_HINT = 'layui-laydate-hint', ELEM_PREV = 'laydate-day-prev', ELEM_NEXT = 'laydate-day-next', ELEM_SIDE = 'layui-laydate-side', ELEM_FOOTER = 'layui-laydate-footer', ELEM_CONFIRM = '.laydate-btns-confirm', ELEM_TIME_TEXT = 'laydate-time-text', ELEM_TIME_BTN = '.laydate-btns-time'
   
   //组件构造器
   ,Class = function(options){
@@ -391,6 +391,7 @@
     ,zIndex: null //控件层叠顺序
     ,done: null //控件选择完毕后的回调，点击清空/现在/确定也均会触发
     ,change: null //日期时间改变后的回调
+    ,shortcuts: null // 快捷方式
   };
   
   //多语言
@@ -443,7 +444,6 @@
       ,time: 'HH:mm:ss'
       ,datetime: 'yyyy-MM-dd HH:mm:ss'
     };
-    
     options.elem = lay(options.elem);
     options.eventElem = lay(options.eventElem);
     
@@ -581,6 +581,11 @@
     ,elemCont = that.elemCont = []
     ,elemTable = that.table = []
 
+    //侧边快捷方式区域
+    ,divSide = that.side = lay.elem('div', {
+      'class': ELEM_SIDE
+    })
+
     //底部区域
     ,divFooter = that.footer = lay.elem('div', {
       'class': ELEM_FOOTER
@@ -673,6 +678,18 @@
       elemTable.push(table);
     });
     
+    //生成侧边快捷方式
+    lay(divSide).html(function(){
+      var ul = lay.elem('ul');
+
+      lay.each(options.shortcuts, function(i, item){
+        var li = lay.elem("li");
+        li.innerHTML = item.text;
+        ul.appendChild(li);
+      });
+      return ul.outerHTML;
+    }());
+
     //生成底部栏
     lay(divFooter).html(function(){
       var html = [], btns = [];
@@ -688,7 +705,13 @@
       html.push('<div class="laydate-footer-btns">'+ btns.join('') +'</div>');
       return html.join('');
     }());
-    
+    (options.type === "date"
+    || options.type === "datetime"
+    || options.type === "year"
+    || options.type === "month")
+    && options.range
+    && options.shortcuts
+    && elem.appendChild(divSide);
     //插入到主区域
     lay.each(elemMain, function(i, main){
       elem.appendChild(main);
@@ -1772,6 +1795,24 @@
       var type = lay(this).attr('lay-type');
       that.tool(this, type);
     });
+
+    //点击快捷方式
+    lay(that.side).find('li').on('click', function(ev){
+      var ul = this.parentNode;
+      var list = ul.children;
+      var cb;
+      for(var i = 0; i < list.length; i++){
+        if(list[i] === this){
+          cb = that.config.shortcuts[i].onClick;
+          if(typeof cb === "function") cb(that);
+          that.remove();
+          break;
+        }
+      }
+      
+    });
+
+
   };
   
   //是否输入框

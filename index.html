@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>使用 layDate 独立版</title>
+</head>
+<body>
+<input type="text" id="test1">
+<script src="./src/laydate.js"></script>
+<script>
+/*
+ * 根据时间戳格式化时间
+ */
+ const dateFormat = function(timestamp, fmt = "yyyy-MM-dd hh:mm:ss") {
+  const date = new Date(timestamp);
+  const o = {
+    "M+": date.getMonth() + 1, //月份
+    "d+": date.getDate(), //日
+    "h+": date.getHours(), //小时
+    "m+": date.getMinutes(), //分
+    "s+": date.getSeconds(), //秒
+    "q+": Math.floor((date.getMonth() + 3) / 3), //季度
+    S: date.getMilliseconds() //毫秒
+  };
+  if (/(y+)/.test(fmt))
+    fmt = fmt.replace(
+      RegExp.$1,
+      (date.getFullYear() + "").substr(4 - RegExp.$1.length)
+    );
+  for (let k in o)
+    if (new RegExp("(" + k + ")").test(fmt))
+      fmt = fmt.replace(
+        RegExp.$1,
+        RegExp.$1.length == 1 ? o[k] : ("00" + o[k]).substr(("" + o[k]).length)
+      );
+  return fmt;
+};
+
+
+laydate.render({
+  elem: '#test1'
+  ,type: 'datetime'
+  ,range: true
+  ,shortcuts: [
+    {
+      text: '今天',
+      onClick(inst) {
+        var startDate = new Date();
+        var endDate = new Date();
+        inst.setValue(dateFormat(startDate, "yyyy-MM-dd 00:00:00") + " - " + dateFormat(endDate, "yyyy-MM-dd 23:59:59"));
+      }
+    },
+    {
+      text: '最近三天',
+      onClick(inst) {
+        var startDate = new Date();
+        startDate.setDate(startDate.getDate() - 2);
+        var endDate = new Date();
+        inst.setValue(dateFormat(startDate, "yyyy-MM-dd 00:00:00") + " - " + dateFormat(endDate, "yyyy-MM-dd 23:59:59"));
+      }
+    },
+    {
+      text: '最近一周',
+      onClick(inst) {
+        var startDate = new Date();
+        startDate.setDate(startDate.getDate() - 6);
+        var endDate = new Date();
+        inst.setValue(dateFormat(startDate, "yyyy-MM-dd 00:00:00") + " - " + dateFormat(endDate, "yyyy-MM-dd 23:59:59"));
+      }
+    }
+  ]
+}); 
+</script>
+</body>
+</html>
+  
