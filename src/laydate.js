@@ -1362,6 +1362,35 @@
     : (options.range ? lay.extend({}, that.startDate, that.startTime) : options.dateTime))
     ,format = that.format.concat();
 
+    //#region 因为that.config可能被外部改变了,所以这里需要根据options.format重新生成正则表达式和返回结果的格式 by 凌云 2018-08-02
+    that.EXP_IF = '';
+    that.EXP_SPLIT = '';
+    var dateType = 'yyyy|y|MM|M|dd|d|HH|H|mm|m|ss|s';
+    format = options.format.match(new RegExp(dateType + '|.', 'g')) || [];
+    that.format = format;
+    lay.each(that.format, function(i, item) {
+        var EXP = new RegExp(dateType).test(item) ?
+            '\\d{' + function() {
+                if (new RegExp(dateType).test(that.format[i === 0 ? i + 1 : i - 1] || '')) {
+                    if (/^yyyy|y$/.test(item)) return 4;
+                    return item.length;
+                }
+                if (/^yyyy$/.test(item)) return '1,4';
+                if (/^y$/.test(item)) return '1,308';
+                return '1,2';
+            }() + '}' :
+            '\\' + item;
+        that.EXP_IF = that.EXP_IF + EXP;
+        that.EXP_SPLIT = that.EXP_SPLIT + '(' + EXP + ')';
+    });
+    that.EXP_IF = new RegExp('^' + (
+        options.range ?
+        that.EXP_IF + '\\s\\' + options.range + '\\s' + that.EXP_IF :
+        that.EXP_IF
+    ) + '$');
+    that.EXP_SPLIT = new RegExp('^' + that.EXP_SPLIT + '$', '');
+    //#endregion 
+
     //转义为规定格式
     lay.each(format, function(i, item){
       if(/yyyy|y/.test(item)){ //年
