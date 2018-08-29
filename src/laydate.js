@@ -11,24 +11,8 @@
   "use strict";
 
   var isLayui = window.layui && layui.define, ready = {
-    getPath: function(){
-      var jsPath = document.currentScript ? document.currentScript.src : function(){
-        var js = document.scripts
-        ,last = js.length - 1
-        ,src;
-        for(var i = last; i > 0; i--){
-          if(js[i].readyState === 'interactive'){
-            src = js[i].src;
-            break;
-          }
-        }
-        return src || js[last].src;
-      }();
-      return jsPath.substring(0, jsPath.lastIndexOf('/') + 1);
-    }()
-    
     //获取节点的style属性值
-    ,getStyle: function(node, name){
+    getStyle: function(node, name){
       var style = node.currentStyle ? node.currentStyle : window.getComputedStyle(node, null);
       return style[style.getPropertyValue ? 'getPropertyValue' : 'getAttribute'](name);
     }
@@ -68,7 +52,22 @@
     v: '5.0.9'
     ,config: {} //全局配置项
     ,index: (window.laydate && window.laydate.v) ? 100000 : 0
-    ,path: ready.getPath
+    ,path: ''
+    ,getPath: function(){
+      var jsPath = document.currentScript ? document.currentScript.src : function(){
+        var js = document.scripts
+        ,last = js.length - 1
+        ,src;
+        for(var i = last; i > 0; i--){
+          if(js[i].readyState === 'interactive'){
+            src = js[i].src;
+            break;
+          }
+        }
+        return src || js[last].src;
+      }();
+      return jsPath.substring(0, jsPath.lastIndexOf('/') + 1);
+    }
     
     //设置全局项
     ,set: function(options){
@@ -106,6 +105,7 @@
   //组件构造器
   ,Class = function(options){
     var that = this;
+    laydate.path = laydate.path || laydate.getPath();
     that.index = ++laydate.index;
     that.config = lay.extend({}, that.config, laydate.config, options);
     laydate.ready(function(){
