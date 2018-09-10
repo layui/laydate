@@ -26,10 +26,10 @@
       container: '#start_date',
       type: 'time',
       done: function (value, date) {
-        setAtts(end.config.min, date || {
-          hours: 0,
-          minutes: 0,
-          seconds: 0
+        setAtts(end.config.min, {
+          hours: date.hours || 0,
+          minutes: date.minutes || 0,
+          seconds: date.seconds || 0
         });
       }
     });
@@ -39,9 +39,9 @@
       type: 'time',
       done: function (value, date) {
         setAtts(start.config.max, date || {
-          hours: 23,
-          minutes: 59,
-          seconds: 59
+          hours: date.hours || 23,
+          minutes: date.minutes || 59,
+          seconds: date.seconds || 59
         });
       }
     });
