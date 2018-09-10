@@ -18,3 +18,6 @@ node_modules/
 _site/
 release/
 .npmignore
+yarn*
+*.log
+*.lock

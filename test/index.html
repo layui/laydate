@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>限制时间范围</title>
+  <script src="../src/laydate.js"></script>
+</head>
+
+<body>
+  <input id="start" placeholder="请选择日期" />
+  <div id="start_date"></div>
+
+  <input id="end" placeholder="请选择日期" />
+  <div id="end_date"></div>
+
+  <script>
+    function setAtts(obj, target) {
+      for (var key in target) {
+        obj[key] = target[key];
+      }
+    }
+
+    var start = laydate.render({
+      elem: '#start',
+      container: '#start_date',
+      type: 'time',
+      done: function (value, date) {
+        setAtts(end.config.min, date || {
+          hours: 0,
+          minutes: 0,
+          seconds: 0
+        });
+      }
+    });
+    var end = laydate.render({
+      elem: '#end',
+      container: '#end_date',
+      type: 'time',
+      done: function (value, date) {
+        setAtts(start.config.max, date || {
+          hours: 23,
+          minutes: 59,
+          seconds: 59
+        });
+      }
+    });
+  </script>
+</body>
+
+</html>
