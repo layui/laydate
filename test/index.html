@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>测试</title>
+  <script src="../src/laydate.js"></script>
+  <style>
+    .line {
+      display: inline-block;
+      width: 200px;
+    }
+  </style>
+</head>
+
+<body>
+  <p>日期选择（固定页面位置）</p>
+  <div class="line">
+    <input class="date" id="start" placeholder="请选择开始日期" />
+  </div>
+  <div class="line">
+    <input class="date" id="end" placeholder="请选择结束日期" />
+  </div>
+
+  <p>时间选择</p>
+  <div class="line">
+    <input class="date" id="start1" placeholder="请选择开始时间" />
+  </div>
+  <div class="line">
+    <input class="date" id="end1" placeholder="请选择结束时间" />
+  </div>
+
+  <p>日期选择（指定控件容器）</p>
+  <div class="line">
+    <input class="date" id="start2" placeholder="请选择开始日期" />
+    <div id="start2_date"></div>
+  </div>
+  <div class="line">
+    <input class="date" id="end2" placeholder="请选择结束日期" />
+    <div id="end2_date"></div>
+  </div>
+
+  <script>
+    function setAtts(obj, target) {
+      for (var key in target) {
+        obj[key] = target[key];
+      }
+    }
+
+    // 日期选择（固定页面位置）
+    var start = laydate.render({
+      elem: '#start',
+      change: console.log,
+      done: function (value, date) {
+        setAtts(end.config.min, {
+          year: date.year || 1900,
+          month: date.month && --date.month || 1,// 因为js Date月是从0开始的...
+          date: date.date || 1
+        });
+      }
+    });
+    var end = laydate.render({
+      elem: '#end',
+      change: console.log,
+      done: function (value, date) {
+        setAtts(start.config.max, {
+          year: date.year || 2099,
+          month: date.month && --date.month || 12,// 因为js Date月是从0开始的...
+          date: date.date || 30
+        });
+      }
+    });
+
+    // 时间选择
+    var start1 = laydate.render({
+      elem: '#start1',
+      type: 'time',
+      change: console.log,
+      done: function (value, date) {
+        setAtts(end1.config.min, {
+          hours: date.hours || 0,
+          minutes: date.minutes || 0,
+          seconds: date.seconds || 0
+        });
+      }
+    });
+    var end1 = laydate.render({
+      elem: '#end1',
+      type: 'time',
+      change: console.log,
+      done: function (value, date) {
+        setAtts(start1.config.max, {
+          hours: date.hours || 23,
+          minutes: date.minutes || 59,
+          seconds: date.seconds || 59
+        });
+      }
+    });
+
+    // 日期选择（指定控件容器）
+    var start2 = laydate.render({
+      elem: '#start2',
+      container: '#start2_date',
+      type: 'datetime',
+      change: console.log,
+      done: function (value, date) {
+        setAtts(end2.config.min, {
+          year: date.year || 1900,
+          month: date.month && --date.month || 1,// 因为js Date月是从0开始的...
+          date: date.date || 1,
+          hours: date.hours || 0,
+          minutes: date.minutes || 0,
+          seconds: date.seconds || 0
+        });
+      }
+    });
+    var end2 = laydate.render({
+      elem: '#end2',
+      container: '#end2_date',
+      type: 'datetime',
+      change: console.log,
+      done: function (value, date) {
+        setAtts(start2.config.max, {
+          year: date.year || 2099,
+          month: date.month && --date.month || 12,// 因为js Date月是从0开始的...
+          date: date.date || 30,
+          hours: date.hours || 23,
+          minutes: date.minutes || 59,
+          seconds: date.seconds || 59
+        });
+      }
+    });
+  </script>
+</body>
+
+</html>
