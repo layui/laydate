@@ -391,7 +391,7 @@
     , zIndex: null //控件层叠顺序
     , done: null //控件选择完毕后的回调，点击清空/现在/确定也均会触发
     , change: null //日期时间改变后的回调
-    , container: 'body' // 日期组件容器
+    , container: '' // 日期组件容器
   };
 
   //多语言
@@ -732,7 +732,7 @@
       default:
         container = 0;
     }
-
+  
     container ? container.append(elem) : isStatic ? options.elem.append(elem) : (
       document.body.appendChild(elem)
       , that.position() //定位
