@@ -724,6 +724,7 @@
     );
     
     that.checkDate().calendar(); //初始校验
+    that.endState = true; //范围选择的初始状态
     that.changeEvent(); //日期切换
     
     Class.thisElemDate = that.elemID;
