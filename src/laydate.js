@@ -1466,7 +1466,8 @@
     lay.each([start, end], function(i, item){
       if(!('month' in item)) return;
       lay.extend(item, {
-        month: item.month + 1
+        month: item.month + 1,
+        value: that.formatDate(item)
       });
     });
     
@@ -1475,7 +1476,15 @@
     
     return that;
   };
-  
+  // 格式化为时间对象
+  Class.prototype.formatDate = function(timeObj){
+    var date = new Date()
+    for(var i in timeObj){
+      var setValue = i.replace(/^[a-z]/, function(h){ return h.toUpperCase() })
+      date['set' + setValue](timeObj[i])
+    }
+    return date
+  }
   //选择日期
   Class.prototype.choose = function(td){
     var that = this
