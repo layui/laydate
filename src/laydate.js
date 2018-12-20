@@ -1631,7 +1631,7 @@
         } else {
           if(lay(btn).hasClass(DISABLED)) return that.hint('不在有效日期或时间范围内');
         }
-        that.done();
+        that.done(null, 'confirm');
         that.setValue(that.parse()).remove()
       }
     };
