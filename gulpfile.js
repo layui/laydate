@@ -46,20 +46,26 @@ gulp.task('other', task.other); //移动一些配件
 gulp.task('clearZip', function(cb){ //清理
   return del(['./release/zip/*'], cb);
 });
-gulp.task('r', ['clearZip'], function(){
+gulp.task('r', gulp.series('clearZip', function(){
   gulp.src('./release/doc/**/*')
   .pipe(gulp.dest(releaseDir))
   
   return gulp.src('./dist/**/*')
   .pipe(gulp.dest(releaseDir + '/laydate'))
-});
+}));
 
 //全部
-gulp.task('default', ['clear'], function(){
+// gulp.task('default', ['clear'], function(){
+//   for(var key in task){
+//     task[key]();
+//   }
+// });
+//全部
+gulp.task('default', gulp.series('clear', function(){
   for(var key in task){
     task[key]();
   }
-});
+}));
 
 
 
