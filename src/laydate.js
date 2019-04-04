@@ -391,6 +391,7 @@
     ,zIndex: null //控件层叠顺序
     ,done: null //控件选择完毕后的回调，点击清空/现在/确定也均会触发
     ,change: null //日期时间改变后的回调
+    ,yearChange:true  //年切换时触发事件
   };
   
   //多语言
@@ -1668,7 +1669,7 @@
           year: listYM[0]
         });
         if(isAlone) that[startEnd].year = listYM[0];
-        options.range || that.done(null, 'change');
+        options.range || (options.yearChange && that.done(null, 'change'));
         that.setBtnStatus();      
         options.range || that.limit(lay(that.footer).find(ELEM_CONFIRM), {
           year: listYM[0]
@@ -1682,7 +1683,7 @@
         if(addSubYeay('sub')) return;
         dateTime.year--;
         that.checkDate('limit').calendar();
-        options.range || that.done(null, 'change');
+        options.range || (options.yearChange && that.done(null, 'change'));
       }
       ,prevMonth: function(){
         var YM = that.getAsYM(dateTime.year, dateTime.month, 'sub');
@@ -1706,7 +1707,7 @@
         if(addSubYeay()) return;
         dateTime.year++
         that.checkDate('limit').calendar();
-        options.range || that.done(null, 'change');
+        options.range || (options.yearChange && that.done(null, 'change'));
       }
     };
   };
