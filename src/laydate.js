@@ -392,6 +392,8 @@
     ,done: null //控件选择完毕后的回调，点击清空/现在/确定也均会触发
     ,change: null //日期时间改变后的回调
     ,yearChange:true  //年切换时触发事件
+    ,monthChange:true  //月切换时触发事件
+    
   };
   
   //多语言
@@ -1692,7 +1694,7 @@
           ,month: YM[1]
         });
         that.checkDate('limit').calendar();
-        options.range || that.done(null, 'change');
+        options.range || (options.monthChange && that.done(null, 'change'));
       }
       ,nextMonth: function(){
         var YM = that.getAsYM(dateTime.year, dateTime.month);
@@ -1701,7 +1703,7 @@
           ,month: YM[1]
         });
         that.checkDate('limit').calendar();
-        options.range || that.done(null, 'change');
+        options.range || (options.monthChange && that.done(null, 'change'));
       }
       ,nextYear: function(){
         if(addSubYeay()) return;
