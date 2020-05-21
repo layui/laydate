@@ -910,7 +910,11 @@
           value = value.split(' '+ options.range +' ');
           that.startDate = that.startDate || that.systemDate();
           that.endDate = that.endDate || that.systemDate();
-          options.dateTime = lay.extend({}, that.startDate);
+          if (options.selectEndDate) {
+            options.dateTime = lay.extend({}, that.endDate);
+          } else {
+            options.dateTime = lay.extend({}, that.startDate);
+          }
           lay.each([that.startDate, that.endDate], function(i, item){
             initDate(item, value[i], i);
           });
