@@ -21,11 +21,10 @@ var task = {
     .pipe(minify({
       compatibility: 'ie7'
     }))
-    .pipe(header('/*! <%= pkg.realname %>-v<%= pkg.version %> <%= pkg.description %> <%= pkg.license %> License  <%= pkg.homepage %>  By <%= pkg.author %> */\n', {pkg: pkg}))
     .pipe(gulp.dest('./dist'));
     
     return gulp.src('./src/laydate.js').pipe(uglify())
-     .pipe(header('/*! <%= pkg.realname %>-v<%= pkg.version %> <%= pkg.description %> <%= pkg.license %> License  <%= pkg.homepage %>  By <%= pkg.author %> */\n ;', {pkg: pkg}))
+     .pipe(header('/*! <%= pkg.realname %> v<%= pkg.version %> | <%= pkg.description %> | The <%= pkg.license %> License */\n ;', {pkg: pkg}))
     .pipe(gulp.dest('./dist'));
     
   }

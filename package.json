@@ -1,7 +1,7 @@
 ﻿{
   "name": "layui-laydate",
-  "realname": "laydate",
-  "version": "5.0.9",
+  "realname": "layDate",
+  "version": "5.1.0",
   "description": "日期与时间组件",
   "main": "src/laydate.js",
   "license": "MIT",
@@ -12,8 +12,6 @@
     "type": "https",
     "url": "git+https://github.com/sentsin/laydate.git"
   },
-  "author": "贤心",
-  "homepage": "http://www.layui.com/laydate/",
   "devDependencies": {
     "gulp": "^3.9.0",
     "gulp-minify-css": "^1.2.4",
