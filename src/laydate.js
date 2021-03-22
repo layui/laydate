@@ -3,15 +3,12 @@
  @License: MIT 
  */ 
 
-
 /** lay 基础 DOM 操作 */
 
 ;!function(){
   "use strict";
   
-  
   var MOD_NAME = 'lay' //模块名
-  ,VERSION = '1.0.0' //版本
   ,document = window.document
   
   //DOM查找
@@ -30,7 +27,6 @@
       this.push(nativeDOM[index]);
     }
   };
-  
   
   /*
     lay 对象操作
@@ -63,8 +59,8 @@
     return args[0];
   };
   
-  //模块版本
-  lay.v = VERSION;
+  //lay 模块版本
+  lay.v = '1.0.0';
   
   //ie版本
   lay.ie = function(){
@@ -193,9 +189,6 @@
     });
     return str.replace(/\s+/, ' ').replace(/^\s|\s$/, '');
   };
-  
-  //版本
-  LAY.prototype.lay = VERSION;
   
   //查找子元素
   LAY.prototype.find = function(selector){
@@ -328,9 +321,6 @@
   
 }();
 
-
-
-
 /** layDate 日期与时间控件 */
 
 ;!function(window){
@@ -401,11 +391,9 @@
     });
   }
   
-  
   /*
     组件操作
   */
-  
   
   //是否闰年
   Class.isLeapYear = function(year){
@@ -1817,7 +1805,6 @@
     
     options.elem[0].eventHandler = true;
   };
-
   
   //核心接口
   laydate.render = function(options){

@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "layui-laydate",
   "realname": "layDate",
   "version": "5.1.0",
@@ -34,5 +34,7 @@
     "datetime",
     "datepicker",
     "calendar"
-  ]
+  ],
+  "homepage": "https://github.com/sentsin/laydate#readme",
+  "author": ""
 }
