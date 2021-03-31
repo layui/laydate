@@ -1854,11 +1854,6 @@
         bind && (that.bindElem = this);
         that.render();
       });
-      
-      //失去焦点自动关闭
-      elem.on('blur', function(){
-        that.remove();
-      });
     };
     
     if(!options.elem[0] || options.elem[0].eventHandler) return;
