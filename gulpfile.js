@@ -43,7 +43,7 @@ gulp.task('other', task.other); //移动一些配件
 
 //打包发行版
 gulp.task('clearZip', function(cb){ //清理
-  return del(['./release/zip/*'], cb);
+  return del(['./release/zip/layDate-v'+ pkg.version], cb);
 });
 gulp.task('r', ['clearZip'], function(){
   gulp.src('./release/doc/**/*')

@@ -165,6 +165,109 @@
     }());
   };
   
+  //当前页面是否存在滚动条
+  lay.hasScrollbar = function(){
+    return document.body.scrollHeight > (window.innerHeight || document.documentElement.clientHeight);
+  };
+  
+  //元素定位
+  lay.position = function(elem, elemView, obj){
+    if(!elemView) return;
+    obj = obj || {};
+    
+    //如果绑定的是 document 或 body 元素，则直接获取鼠标坐标
+    if(elem === document || elem === lay('body')[0]){
+      obj.clickType = 'right';
+    }
+
+    //绑定绑定元素的坐标
+    var rect = obj.clickType === 'right' ? function(){
+      var e = obj.e || window.event || {};
+      return {
+        left: e.clientX
+        ,top: e.clientY
+        ,right: e.clientX
+        ,bottom: e.clientY
+      }
+    }() : elem.getBoundingClientRect()
+    ,elemWidth = elemView.offsetWidth //控件的宽度
+    ,elemHeight = elemView.offsetHeight //控件的高度
+    
+    //滚动条高度
+    ,scrollArea = function(type){
+      type = type ? 'scrollLeft' : 'scrollTop';
+      return document.body[type] | document.documentElement[type];
+    }
+    
+    //窗口宽高
+    ,winArea = function(type){
+      return document.documentElement[type ? 'clientWidth' : 'clientHeight']
+    }, margin = 5, left = rect.left, top = rect.bottom;
+
+    //判断右侧是否超出边界
+    if(left + elemWidth + margin > winArea('width')){
+      left = winArea('width') - elemWidth - margin; //如果超出右侧，则将面板向右靠齐
+    }
+    
+    //判断底部和顶部是否超出边界
+    if(top + elemHeight + margin > winArea()){
+      //优先顶部是否有足够区域显示完全
+      if(rect.top > elemHeight + margin){
+        top = rect.top - elemHeight - margin*2; //顶部有足够的区域显示
+      } else {
+        //如果面板是鼠标右键弹出，且顶部没有足够区域显示，则将面板向底部靠齐
+        if(obj.clickType === 'right'){
+          top = winArea() - elemHeight - margin*2;
+          if(top < 0) top = 0; //不能溢出窗口顶部
+        }
+      }
+    }
+    
+    //定位类型
+    var position = obj.position;
+    if(position) elemView.style.position = position;
+    
+    //设置坐标
+    elemView.style.left = left + (position === 'fixed' ? 0 : scrollArea(1)) + 'px';
+    elemView.style.top = top + (position === 'fixed' ? 0 : scrollArea()) + 'px';
+
+    //防止页面无滚动条时，又因为弹出面板而出现滚动条导致的坐标计算偏差
+    if(!lay.hasScrollbar()){
+      var rect1 = elemView.getBoundingClientRect();
+      //如果弹出面板的溢出窗口底部，则表示将出现滚动条，此时需要重新计算坐标
+      if(!obj.SYSTEM_RELOAD && (rect1.bottom + margin) > winArea()){
+        obj.SYSTEM_RELOAD = true;
+        setTimeout(function(){
+          lay.position(elem, elemView, obj);
+        }, 50);
+      }
+    }
+  };
+  
+  //获取元素上的参数配置上
+  lay.options = function(elem, attr){
+    var othis = lay(elem)
+    ,attrName = attr || 'lay-options';
+    try {
+      return new Function('return '+ (othis.attr(attrName) || '{}'))();
+    } catch(ev) {
+      hint.error('parseerror：'+ ev, 'error');
+      return {};
+    }
+  };
+  
+  //元素是否属于顶级元素（document 或 body）
+  lay.isTopElem = function(elem){
+    var topElems = [document, lay('body')[0]]
+    ,matched = false;
+    lay.each(topElems, function(index, item){
+      if(item === elem){
+        return matched = true
+      }
+    });
+    return matched;
+  };
+  
   //追加字符
   LAY.addStr = function(str, new_str){
     str = str.replace(/\s+/, ' ');
@@ -227,12 +330,12 @@
     });
   };
   
-  //移除css类
+  //移除 css 类
   LAY.prototype.removeClass = function(className){
     return this.addClass(className, true);
   };
   
-  //是否包含css类
+  //是否包含 css 类
   LAY.prototype.hasClass = function(className){
     var has = false;
     this.each(function(index, item){
@@ -241,6 +344,41 @@
       }
     });
     return has;
+  };
+  
+  //添加或获取 css style
+  LAY.prototype.css = function(key, value){
+    var that = this
+    ,parseValue = function(v){
+      return isNaN(v) ? v : (v +'px');
+    };
+    return (typeof key === 'string' && value === undefined) ? function(){
+      if(that.length > 0) return that[0].style[key];
+    }() : that.each(function(index, item){
+      typeof key === 'object' ? lay.each(key, function(thisKey, thisValue){
+        item.style[thisKey] = parseValue(thisValue);
+      }) : item.style[key] = parseValue(value);
+    });   
+  };
+  
+  //添加或获取宽度
+  LAY.prototype.width = function(value){
+    var that = this;
+    return value === undefined ? function(){
+      if(that.length > 0) return that[0].offsetWidth; //此处还需做兼容
+    }() : that.each(function(index, item){
+      that.css('width', value);
+    });   
+  };
+  
+  //添加或获取高度
+  LAY.prototype.height = function(value){
+    var that = this;
+    return value === undefined ? function(){
+      if(that.length > 0) return that[0].offsetHeight; //此处还需做兼容
+    }() : that.each(function(index, item){
+      that.css('height', value);
+    });   
   };
   
   //添加或获取属性
@@ -343,7 +481,7 @@
   }
 
   ,laydate = {
-    v: '5.1.0'
+    v: '5.2.0'
     ,config: {} //全局配置项
     ,index: (window.laydate && window.laydate.v) ? 100000 : 0
     ,path: ready.getPath
@@ -377,7 +515,7 @@
   }
 
   //字符常量
-  ,MOD_NAME = 'laydate', ELEM = '.layui-laydate', THIS = 'layui-this', SHOW = 'layui-show', HIDE = 'layui-hide', DISABLED = 'laydate-disabled', TIPS_OUT = '开始时间不能早于结束时间<br>请重新选择', LIMIT_YEAR = [100, 200000]
+  ,MOD_NAME = 'laydate', ELEM = '.layui-laydate', THIS = 'layui-this', SHOW = 'layui-show', HIDE = 'layui-hide', DISABLED = 'laydate-disabled', LIMIT_YEAR = [100, 200000]
   
   ,ELEM_STATIC = 'layui-laydate-static', ELEM_LIST = 'layui-laydate-list', ELEM_SELECTED = 'laydate-selected', ELEM_HINT = 'layui-laydate-hint', ELEM_PREV = 'laydate-day-prev', ELEM_NEXT = 'laydate-day-next', ELEM_FOOTER = 'layui-laydate-footer', ELEM_CONFIRM = '.laydate-btns-confirm', ELEM_TIME_TEXT = 'laydate-time-text', ELEM_TIME_BTN = '.laydate-btns-time'
   
@@ -409,8 +547,8 @@
     ,isInitValue: true //用于控制是否自动向元素填充初始值（需配合 value 参数使用）
     ,min: '1900-1-1' //有效最小日期，年月日必须用“-”分割，时分秒必须用“:”分割。注意：它并不是遵循 format 设定的格式。
     ,max: '2099-12-31' //有效最大日期，同上
-    ,trigger: 'focus' //呼出控件的事件
-    ,show: false //是否直接显示，如果设置true，则默认直接显示控件
+    ,trigger: 'click' //呼出控件的事件
+    ,show: false //是否直接显示，如果设置 true，则默认直接显示控件
     ,showBottom: true //是否显示底部栏
     ,btns: ['clear', 'now', 'confirm'] //右下角显示的按钮，会按照数组顺序排列
     ,lang: 'cn' //语言，只支持cn/en，即中文和英文
@@ -441,6 +579,9 @@
           ,clear: '清空'
           ,now: '现在'
         }
+        ,timeout: '结束时间不能早于开始时间<br>请重新选择'
+        ,invalidDate: '不在有效日期或时间范围内'
+        ,formatError: ['日期格式不合法<br>必须遵循下述格式：<br>', '<br>已为你重置']
       }
       ,en: {
         weeks: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
@@ -455,6 +596,9 @@
           ,clear: 'Clear'
           ,now: 'Now'
         }
+        ,timeout: 'End time cannot be less than start Time<br>Please re-select'
+        ,invalidDate: 'Invalid date'
+        ,formatError: ['The date format error<br>Must be followed：<br>', '<br>It has been reset']
       }
     };
     return text[options.lang] || text['cn'];
@@ -482,10 +626,19 @@
     //日期范围分隔符
     if(options.range === true) options.range = '-';
     
-    //根据不同type，初始化默认format
-    if(options.format === format.date){
-      options.format = format[options.type];
+    //若 type 设置非法，则初始化为 date 类型
+    if(!format[options.type]){
+      window.console && console.error && console.error('laydate type error:\''+ options.type + '\' is not supported')
+      options.type = 'date';
     }
+    
+    //根据不同 type，初始化默认 format
+    
+    if(options.format === format.date){
+      options.format = format[options.type] || format.date;
+      
+    }
+    
     
     //将日期格式转化成数组
     that.format = options.format.match(new RegExp(dateType + '|.', 'g')) || [];
@@ -768,6 +921,8 @@
     var that = this
     ,options = that.config
     ,elem = lay('#'+ (prev || that.elemID));
+    if(!elem[0]) return that;
+    
     if(!elem.hasClass(ELEM_STATIC)){
       that.checkDate(function(){
         elem.remove();
@@ -780,39 +935,11 @@
   //定位算法
   Class.prototype.position = function(){
     var that = this
-    ,options = that.config
-    ,elem = that.bindElem || options.elem[0]
-    ,rect = elem.getBoundingClientRect() //绑定元素的坐标
-    ,elemWidth = that.elem.offsetWidth //控件的宽度
-    ,elemHeight = that.elem.offsetHeight //控件的高度
-    
-    //滚动条高度
-    ,scrollArea = function(type){
-      type = type ? 'scrollLeft' : 'scrollTop';
-      return document.body[type] | document.documentElement[type];
-    }
-    ,winArea = function(type){
-      return document.documentElement[type ? 'clientWidth' : 'clientHeight']
-    }, margin = 5, left = rect.left, top = rect.bottom;
-    
-    //如果右侧超出边界
-    if(left + elemWidth + margin > winArea('width')){
-      left = winArea('width') - elemWidth - margin;
-    }
-    
-    //如果底部超出边界
-    if(top + elemHeight + margin > winArea()){
-      top = rect.top > elemHeight //顶部是否有足够区域显示完全
-        ? rect.top - elemHeight 
-      : winArea() - elemHeight;
-      top = top - margin*2;
-    }
-    
-    if(options.position){
-      that.elem.style.position = options.position;
-    }
-    that.elem.style.left = left + (options.position === 'fixed' ? 0 : scrollArea(1)) + 'px';
-    that.elem.style.top = top + (options.position === 'fixed' ? 0 : scrollArea()) + 'px';
+    ,options = that.config;
+    lay.position(that.bindElem || options.elem[0], that.elem, {
+      position: options.position
+    });
+    return that;
   };
   
   //提示
@@ -867,6 +994,7 @@
     var that = this
     ,thisDate = new Date()
     ,options = that.config
+    ,lang = that.lang()
     ,dateTime = options.dateTime = options.dateTime || that.systemDate()
     ,thisMaxDate, error
     
@@ -959,9 +1087,9 @@
           initDate(dateTime, value)
         }
       } else {
-        that.hint('日期格式不合法<br>必须遵循下述格式：<br>'+ (
+        that.hint(lang.formatError[0] + (
           options.range ? (options.format + ' '+ options.range +' ' + options.format) : options.format
-        ) + '<br>已为你重置');
+        ) + lang.formatError[1]);
         error = true;
       }
     } else if(value && value.constructor === Date){ //如果值为日期对象时
@@ -1050,8 +1178,8 @@
     ,tds = lay(that.table[index]).find('td')
     ,elemYM = lay(that.elemHeader[index][2]).find('span');
     
-    if(dateTime.year < LIMIT_YEAR[0]) dateTime.year = LIMIT_YEAR[0], that.hint('最低只能支持到公元'+ LIMIT_YEAR[0] +'年');
-    if(dateTime.year > LIMIT_YEAR[1]) dateTime.year = LIMIT_YEAR[1], that.hint('最高只能支持到公元'+ LIMIT_YEAR[1] +'年');
+    if(dateTime.year < LIMIT_YEAR[0]) dateTime.year = LIMIT_YEAR[0], that.hint(lang.invalidDate);
+    if(dateTime.year > LIMIT_YEAR[1]) dateTime.year = LIMIT_YEAR[1], that.hint(lang.invalidDate);
     
     //记录初始值
     if(!that.firstDate){
@@ -1372,6 +1500,7 @@
   Class.prototype.setBtnStatus = function(tips, start, end){
     var that = this
     ,options = that.config
+    ,lang = that.lang()
     ,isOut, elemBtn = lay(that.footer).find(ELEM_CONFIRM);
     if(options.range && options.type !== 'time'){
       start = start || options.dateTime;
@@ -1385,7 +1514,7 @@
       
       //是否异常提示
       if(tips && isOut) that.hint(
-        typeof tips === 'string' ? TIPS_OUT.replace(/日期/g, tips) : TIPS_OUT
+        typeof tips === 'string' ? lang.timeout.replace(/日期/g, tips) : lang.timeout
       );
     }
   };
@@ -1446,52 +1575,6 @@
     
     options.position === 'static' || lay(elem)[valType](value || '');
     return this;
-  };
-  
-  //标记范围内的日期
-  Class.prototype.stampRange = function(){
-    var that = this
-    ,options = that.config
-    ,dateTime = options.dateTime
-    ,startTime, endTime
-    ,tds = lay(that.elem).find('td');
-    
-    if(options.range && !that.endDate) lay(that.footer).find(ELEM_CONFIRM).addClass(DISABLED);
-    if(!that.endDate) return;
-
-    startTime = that.newDate({
-      year: dateTime.year
-      ,month: dateTime.month
-      ,date: dateTime.date
-    }).getTime();
-    
-    endTime = that.newDate({
-      year: that.endDate.year
-      ,month: that.endDate.month
-      ,date: that.endDate.date
-    }).getTime();
-    
-    if(startTime > endTime) return that.hint(TIPS_OUT);
-    
-    lay.each(tds, function(i, item){
-      var ymd = lay(item).attr('lay-ymd').split('-')
-      ,thisTime = that.newDate({
-        year: ymd[0]
-        ,month: ymd[1] - 1
-        ,date: ymd[2]
-      }).getTime();
-      lay(item).removeClass(ELEM_SELECTED + ' ' + THIS);
-      if(thisTime === startTime || thisTime === endTime){
-        lay(item).addClass(
-          lay(item).hasClass(ELEM_PREV) || lay(item).hasClass(ELEM_NEXT)
-            ? ELEM_SELECTED
-          : THIS
-        );
-      }
-      if(thisTime > startTime && thisTime < endTime){
-        lay(item).addClass(ELEM_SELECTED);
-      }
-    });
   };
   
   //执行done/change回调
@@ -1557,6 +1640,7 @@
   Class.prototype.tool = function(btn, type){
     var that = this
     ,options = that.config
+    ,lang = that.lang()
     ,dateTime = options.dateTime
     ,isStatic = options.position === 'static'
     ,active = {
@@ -1605,12 +1689,11 @@
       //确定
       ,confirm: function(){
         if(options.range){
-          if(!that.endDate) return that.hint('请先选择日期范围');
           if(lay(btn).hasClass(DISABLED)) return that.hint(
-            options.type === 'time' ? TIPS_OUT.replace(/日期/g, '时间') : TIPS_OUT
+            options.type === 'time' ? lang.timeout.replace(/日期/g, '时间') : lang.timeout
           );
         } else {
-          if(lay(btn).hasClass(DISABLED)) return that.hint('不在有效日期或时间范围内');
+          if(lay(btn).hasClass(DISABLED)) return that.hint(lang.invalidDate);
         }
         that.done();
         that.setValue(that.parse()).remove()
@@ -1771,6 +1854,11 @@
         bind && (that.bindElem = this);
         that.render();
       });
+      
+      //失去焦点自动关闭
+      elem.on('blur', function(){
+        that.remove();
+      });
     };
     
     if(!options.elem[0] || options.elem[0].eventHandler) return;
@@ -1788,7 +1876,7 @@
       that.remove();
     }).on('keydown', function(e){
       if(e.keyCode === 13){
-        if(lay('#'+ that.elemID)[0] && that.elemID === Class.thisElem){
+        if(lay('#'+ that.elemID)[0] && that.elemID === Class.thisElemDate){
           e.preventDefault();
           lay(that.footer).find(ELEM_CONFIRM)[0].click();
         }
@@ -1841,3 +1929,4 @@
   );
 
 }(window);
+
