@@ -141,10 +141,17 @@
   
   //载入 CSS 依赖
   lay.link = function(href, fn, cssname){
-    var head = document.getElementsByTagName("head")[0], link = document.createElement('link');
+    var head = document.getElementsByTagName("head")[0]
+    ,link = document.createElement('link');
+    
     if(typeof fn === 'string') cssname = fn;
+    
     var app = (cssname || href).replace(/\.|\//g, '');
-    var id = 'layuicss-'+ app, timeout = 0;
+    var id = 'layuicss-'+ app
+    ,STAUTS_NAME = 'creating'
+    ,timeout = 0;
+    
+    
     
     link.rel = 'stylesheet';
     link.href = href;
@@ -153,15 +160,31 @@
     if(!document.getElementById(id)){
       head.appendChild(link);
     }
-    
+
     if(typeof fn !== 'function') return;
-    
-    //轮询css是否加载完毕
-    (function poll() {
-      if(++timeout > 8 * 1000 / 100){
-        return window.console && console.error(app + '.css: Invalid');
+
+    //轮询 css 是否加载完毕
+    (function poll(status) {
+      var delay = 100
+      ,getLinkElem = document.getElementById(id); //获取动态插入的 link 元素
+      
+      //如果轮询超过指定秒数，则视为请求文件失败或 css 文件不符合规范
+      if(++timeout > 10 * 1000 / delay){
+        return window.console && console.error(app +'.css: Invalid');
       };
-      parseInt(lay.getStyle(document.getElementById(id), 'width')) === 1989 ? fn() : setTimeout(poll, 100);
+      
+      //css 加载就绪
+      if(parseInt(lay.getStyle(getLinkElem, 'width')) === 1989){
+        //如果参数来自于初始轮询（即未加载就绪时的），则移除 link 标签状态
+        if(status === STAUTS_NAME) getLinkElem.removeAttribute('lay-status');
+        //如果 link 标签的状态仍为「创建中」，则继续进入轮询，直到状态改变，则执行回调
+        getLinkElem.getAttribute('lay-status') === STAUTS_NAME ? setTimeout(poll, delay) : fn();
+      } else {
+        getLinkElem.setAttribute('lay-status', STAUTS_NAME);
+        setTimeout(function(){
+          poll(STAUTS_NAME);
+        }, delay);
+      }
     }());
   };
   
@@ -398,16 +421,21 @@
     });
   };
   
-  //设置HTML内容
+  //设置或获取 HTML 内容
   LAY.prototype.html = function(html){
-    return this.each(function(index, item){
+    var that = this;
+    return html === undefined ? function(){
+      if(that.length > 0) return that[0].innerHTML;
+    }() : this.each(function(index, item){
       item.innerHTML = html;
     });
   };
   
-  //设置值
+  //设置或获取值
   LAY.prototype.val = function(value){
-    return this.each(function(index, item){
+    return value === undefined ? function(){
+      if(that.length > 0) return that[0].value;
+    }() : this.each(function(index, item){
         item.value = value;
     });
   };
@@ -481,7 +509,7 @@
   }
 
   ,laydate = {
-    v: '5.2.0'
+    v: '5.2.1'
     ,config: {} //全局配置项
     ,index: (window.laydate && window.laydate.v) ? 100000 : 0
     ,path: ready.getPath
@@ -1265,6 +1293,7 @@
     
     //同步按钮可点状态
     that.setBtnStatus();
+    that.stampRange(index, tds); //标记范围内的日期
     
     return that;
   };
@@ -1577,7 +1606,90 @@
     return this;
   };
   
-  //执行done/change回调
+  //标记范围内的日期
+  Class.prototype.stampRange = function(index, tds){
+    var that = this
+    ,options = that.config
+    ,startTime, endTime;
+
+    if(!options.range) return;
+    
+    startTime = that.newDate(options.dateTime).getTime();
+    endTime = that.newDate(that.endDate).getTime();
+    
+    //标记范围样式
+    lay.each(tds, function(i, item){
+      var ymd = lay(item).attr('lay-ymd').split('-')
+      ,thisTime = that.newDate({
+        year: ymd[0]
+        ,month: ymd[1] - 1
+        ,date: ymd[2]
+      }).getTime();
+
+      if(index == 0){
+        if(thisTime > startTime){
+          lay(item).addClass(ELEM_SELECTED);
+        }
+      } else {
+        if(thisTime < endTime){
+          lay(item).addClass(ELEM_SELECTED);
+        }
+      }
+      
+      return;
+      if(thisTime === startTime || thisTime === endTime){
+        lay(item).addClass(
+          lay(item).hasClass(ELEM_PREV) || lay(item).hasClass(ELEM_NEXT)
+            ? ELEM_SELECTED
+          : THIS
+        );
+      }
+      if(thisTime > startTime && thisTime < endTime){
+        lay(item).addClass(ELEM_SELECTED);
+      }
+    });
+    
+    return;
+    
+    if(options.range && !that.endDate) lay(that.footer).find(ELEM_CONFIRM).addClass(DISABLED);
+    if(!that.endDate) return;
+
+    startTime = that.newDate({
+      year: that.startDate.year
+      ,month: that.startDate.month
+      ,date: that.startDate.date
+    }).getTime();
+    
+    endTime = that.newDate({
+      year: that.endDate.year
+      ,month: that.endDate.month
+      ,date: that.endDate.date
+    }).getTime();
+    
+    if(startTime > endTime) return that.hint(TIPS_OUT);
+    
+    lay.each(tds, function(i, item){
+      var ymd = lay(item).attr('lay-ymd').split('-')
+      ,thisTime = that.newDate({
+        year: ymd[0]
+        ,month: ymd[1] - 1
+        ,date: ymd[2]
+      }).getTime();
+      lay(item).removeClass(ELEM_SELECTED + ' ' + THIS);
+      if(thisTime === startTime || thisTime === endTime){
+        lay(item).addClass(
+          lay(item).hasClass(ELEM_PREV) || lay(item).hasClass(ELEM_NEXT)
+            ? ELEM_SELECTED
+          : THIS
+        );
+      }
+      if(thisTime > startTime && thisTime < endTime){
+        lay(item).addClass(ELEM_SELECTED);
+      }
+    });
+  };
+  
+  //执行 done/change 回调
   Class.prototype.done = function(param, type){
     var that = this
     ,options = that.config
