@@ -637,6 +637,7 @@
     var that = this
     ,options = that.config
     ,dateType = 'yyyy|y|MM|M|dd|d|HH|H|mm|m|ss|s'
+    ,safeType = '\\w'
     ,isStatic = options.position === 'static'
     ,format = {
       year: 'yyyy'
@@ -685,7 +686,7 @@
           if(/^y$/.test(item)) return '1,308';
           return '1,2';
         }() +'}' 
-      : '\\' + item;
+      : new RegExp(safeType).test(item) ? '' + item : '\\' + item;
       that.EXP_IF = that.EXP_IF + EXP;
       that.EXP_SPLIT = that.EXP_SPLIT + '(' + EXP + ')';
     });
