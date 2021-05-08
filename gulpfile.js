@@ -1,6 +1,7 @@
-﻿/**
- layDate构建
-*/
+﻿
+/*!
+ * laydate build
+ */
 
 var pkg = require('./package.json');
 
@@ -23,7 +24,11 @@ var task = {
     }))
     .pipe(gulp.dest('./dist'));
     
-    return gulp.src('./src/laydate.js').pipe(uglify())
+    return gulp.src('./src/laydate.js').pipe(uglify({
+      output: {
+        ascii_only: true //escape Unicode characters in strings and regexps
+      }
+    }))
      .pipe(header('/*! <%= pkg.realname %> v<%= pkg.version %> | <%= pkg.description %> | The <%= pkg.license %> License */\n ;', {pkg: pkg}))
     .pipe(gulp.dest('./dist'));
     
