@@ -29,7 +29,7 @@ var task = {
         ascii_only: true //escape Unicode characters in strings and regexps
       }
     }))
-     .pipe(header('/*! <%= pkg.realname %> v<%= pkg.version %> | <%= pkg.description %> | The <%= pkg.license %> License */\n ;', {pkg: pkg}))
+     .pipe(header('/*! <%= pkg.realname %> v<%= pkg.version %> | <%= pkg.description %> | <%= pkg.license %> Licensed */\n ;', {pkg: pkg}))
     .pipe(gulp.dest('./dist'));
     
   }
