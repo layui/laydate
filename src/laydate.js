@@ -1933,6 +1933,24 @@
     });
     
     isOut = timestrap.now < timestrap.min || timestrap.now > timestrap.max;
+	//禁止选择日期
+    let notAllowDays = options.notAllowDays;
+    if (notAllowDays != undefined && notAllowDays.length != 0) {
+      var isMatch = notAllowDays.some(function (day) {
+        return new Date(day + ' 00:00:00').getTime() == timestrap.now;
+      })
+      if (isMatch) {
+        isOut = isMatch;
+      }
+    }
+    //允许选择日期
+    let allowDays = options.allowDays;
+    if (allowDays != undefined && allowDays.length != 0) {
+      var isMatch = allowDays.some(function (day) {
+        return new Date(day + ' 00:00:00').getTime() == timestrap.now;
+      })
+      isOut = !isMatch || isOut;
+    }
     elem && elem[isOut ? 'addClass' : 'removeClass'](DISABLED);
     return isOut;
   };
