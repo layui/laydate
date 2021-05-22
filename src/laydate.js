@@ -2196,6 +2196,17 @@
             isAlone && ((index ? that.endDate : dateTime).year = ym);
             that.list('month', index);
           }
+          /**
+           * 如果非范围选择，且为年月选择器，点击了月列表，则完成年月选择，关闭选择器列表
+           * @author J.Soon <serdeemail@gmail.com>
+           */
+          if (!options.range) {
+            if(options.type === 'month' && type === 'month'){
+              that.checkDate('limit').calendar();
+              that.done();
+              that.setValue(that.parse()).remove();
+            }
+          }
         } else {
           that.checkDate('limit').calendar(null, index);
           that.closeList();
