@@ -2297,6 +2297,11 @@
     if(options.range && options.type !== 'time'){
       start = start || options.dateTime;
       end = end || that.endDate;
+      //月份范围选择：默认日期为1号处理
+      if(options.type == 'month'){
+        start.date = 1;
+        end.date = 1;
+      }
       isOut = that.newDate(start).getTime() > that.newDate(end).getTime();
       
       //如果不在有效日期内，直接禁用按钮，否则比较开始和结束日期
